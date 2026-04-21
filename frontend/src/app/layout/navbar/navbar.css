@@ -1,0 +1,17 @@
+.app-topbar {
+  height: 56px;
+  padding: 0 1.25rem;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.88);
+  border-bottom: 1px solid rgba(34, 197, 94, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.app-topbar-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #166534;
+  letter-spacing: 0.01em;
+}

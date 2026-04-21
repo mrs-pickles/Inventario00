@@ -1,0 +1,45 @@
+<h1>Categorías</h1>
+
+<div>
+  <input
+    type="text"
+    [(ngModel)]="nuevaCategoria.nombre"
+    placeholder="Nombre de categoría"
+  />
+
+  <button (click)="guardarCategoria()">
+    {{ editando ? 'Actualizar' : 'Guardar' }}
+  </button>
+
+  <button *ngIf="editando" (click)="resetFormulario()">
+    Cancelar
+  </button>
+</div>
+
+<hr />
+
+<table border="1">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Nombre</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr *ngFor="let categoria of categorias">
+      <td>{{ categoria.id }}</td>
+      <td>{{ categoria.nombre }}</td>
+      <td>
+        <button (click)="editarCategoria(categoria)">
+          Editar
+        </button>
+
+        <button (click)="eliminarCategoria(categoria.id)">
+          Eliminar
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>

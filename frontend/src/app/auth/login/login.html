@@ -1,0 +1,41 @@
+<div class="login-container">
+  <p-card header="Iniciar Sesión" class="login-card">
+    <form class="login-form" (ngSubmit)="iniciarSesion()">
+      <div class="field">
+        <label for="login-email">Email</label>
+        <input
+          id="login-email"
+          class="w-full"
+          pInputText
+          type="email"
+          [(ngModel)]="email"
+          name="loginEmail"
+          autocomplete="username"
+          placeholder="Ingrese su correo"
+        />
+      </div>
+
+      <div class="field">
+        <label for="login-password">Contraseña</label>
+        <input
+          id="login-password"
+          class="w-full"
+          pInputText
+          type="password"
+          [(ngModel)]="password"
+          name="loginPassword"
+          autocomplete="current-password"
+          placeholder="Ingrese su contraseña"
+        />
+      </div>
+
+      <button
+        pButton
+        type="submit"
+        class="w-full"
+        label="Ingresar"
+        icon="pi pi-sign-in">
+      </button>
+    </form>
+  </p-card>
+</div>

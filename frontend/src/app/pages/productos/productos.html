@@ -1,0 +1,219 @@
+<div class="productos-page">
+  <header class="page-hero">
+    <div class="page-hero-icon" aria-hidden="true">
+      <i class="pi pi-box"></i>
+    </div>
+    <div>
+      <h1 class="page-title">Productos</h1>
+      <p class="page-subtitle">Alta, edición y control de stock</p>
+    </div>
+  </header>
+
+  <div class="productos-grid">
+    <p-card styleClass="productos-form-card">
+      <div class="card-head">
+        <i
+          class="pi card-head-icon"
+          [ngClass]="editando ? 'pi-pencil' : 'pi-plus-circle'"
+          aria-hidden="true"
+        ></i>
+        <div>
+          <h2 class="card-head-title">
+            {{ editando ? 'Editar producto' : 'Registrar producto' }}
+          </h2>
+          <p class="card-head-desc">
+            {{
+              editando
+                ? 'Ajusta los datos y pulsa actualizar.'
+                : 'Completa los campos para añadir al catálogo.'
+            }}
+          </p>
+        </div>
+      </div>
+
+      <div class="form-stack">
+        <div class="field">
+          <label for="prod-nombre">Nombre</label>
+          <div class="input-with-icon">
+            <i class="pi pi-tag" aria-hidden="true"></i>
+            <input
+              id="prod-nombre"
+              pInputText
+              class="w-full"
+              [(ngModel)]="nuevoProducto.nombre"
+              name="prodNombre"
+              placeholder="Ej. Resma A4"
+            />
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="prod-precio">Precio</label>
+            <p-inputNumber
+              inputId="prod-precio"
+              [(ngModel)]="nuevoProducto.precio"
+              name="prodPrecio"
+              mode="decimal"
+              [min]="0"
+              [minFractionDigits]="2"
+              [maxFractionDigits]="2"
+              placeholder="0.00"
+              styleClass="w-full"
+              [showButtons]="false"
+            />
+          </div>
+          <div class="field">
+            <label for="prod-stock">Stock</label>
+            <p-inputNumber
+              inputId="prod-stock"
+              [(ngModel)]="nuevoProducto.stock"
+              name="prodStock"
+              [min]="0"
+              [useGrouping]="false"
+              placeholder="0"
+              styleClass="w-full"
+              [showButtons]="false"
+            />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="prod-cat">Categoría</label>
+          <p-select
+            inputId="prod-cat"
+            [(ngModel)]="nuevoProducto.categoriaId"
+            name="prodCategoria"
+            [options]="categorias"
+            optionLabel="nombre"
+            optionValue="id"
+            placeholder="Seleccione categoría"
+            [showClear]="true"
+            styleClass="w-full"
+            appendTo="body"
+          />
+        </div>
+
+        <div class="form-actions">
+          <button
+            pButton
+            type="button"
+            [label]="editando ? 'Actualizar' : 'Guardar'"
+            [icon]="editando ? 'pi pi-check' : 'pi pi-save'"
+            class="w-full"
+            (click)="guardarProducto()"
+            [disabled]="
+              !nuevoProducto.nombre.trim() ||
+              nuevoProducto.categoriaId == null ||
+              nuevoProducto.categoriaId === 0
+            "
+          ></button>
+          @if (editando) {
+            <button
+              pButton
+              type="button"
+              label="Cancelar"
+              icon="pi pi-times"
+              severity="secondary"
+              [outlined]="true"
+              class="w-full"
+              (click)="resetFormulario()"
+            ></button>
+          }
+        </div>
+      </div>
+    </p-card>
+
+    <p-card styleClass="productos-table-card">
+      <div class="card-head">
+        <i class="pi pi-list card-head-icon" aria-hidden="true"></i>
+        <div>
+          <h2 class="card-head-title">Catálogo</h2>
+          <p class="card-head-desc">{{ productos.length }} producto(s)</p>
+        </div>
+      </div>
+
+      <p-table
+        [value]="productos"
+        [paginator]="true"
+        [rows]="8"
+        [rowsPerPageOptions]="[8, 16, 32]"
+        responsiveLayout="stack"
+        styleClass="p-datatable-sm productos-table"
+        [stripedRows]="true"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="width: 4rem">ID</th>
+            <th>Nombre</th>
+            <th style="width: 7rem">Precio</th>
+            <th style="width: 6rem">Stock</th>
+            <th>Categoría</th>
+            <th style="width: 7rem; text-align: center">Acciones</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-p>
+          <tr>
+            <td>{{ p.id }}</td>
+            <td>
+              <span class="cell-name">
+                <i class="pi pi-box cell-lead-icon" aria-hidden="true"></i>
+                {{ p.nombre }}
+              </span>
+            </td>
+            <td>{{ p.precio | number : '1.2-2' }}</td>
+            <td>
+              <span class="stock-pill">
+                <i class="pi pi-database" aria-hidden="true"></i>
+                {{ p.stock }}
+              </span>
+            </td>
+            <td>
+              @if (p.categoria?.nombre) {
+                <p-tag
+                  [value]="p.categoria.nombre"
+                  severity="success"
+                  [rounded]="true"
+                />
+              } @else {
+                <span class="text-muted">—</span>
+              }
+            </td>
+            <td class="actions-cell">
+              <button
+                pButton
+                type="button"
+                icon="pi pi-pencil"
+                [rounded]="true"
+                [text]="true"
+                severity="secondary"
+                pTooltip="Editar"
+                tooltipPosition="top"
+                (click)="editarProducto(p)"
+              ></button>
+              <button
+                pButton
+                type="button"
+                icon="pi pi-trash"
+                [rounded]="true"
+                [text]="true"
+                severity="danger"
+                pTooltip="Eliminar"
+                tooltipPosition="top"
+                (click)="eliminarProducto(p.id)"
+              ></button>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="6" class="empty-table">
+              <i class="pi pi-inbox" aria-hidden="true"></i>
+              <span>No hay productos todavía.</span>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-card>
+  </div>
+</div>

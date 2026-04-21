@@ -1,0 +1,27 @@
+<div class="sidebar">
+  @if (auth.getProfile(); as p) {
+    <div class="sidebar-profile">
+      <div class="profile-avatar" aria-hidden="true">{{ p.initials }}</div>
+      <div class="profile-text">
+        <span class="profile-name">{{ p.name }}</span>
+        <span class="profile-email">{{ p.email }}</span>
+      </div>
+    </div>
+  }
+
+  <h2>Inventario</h2>
+
+  <ul class="sidebar-nav">
+    <li routerLink="/dashboard" routerLinkActive="nav-active">Dashboard</li>
+    <li routerLink="/productos" routerLinkActive="nav-active">Productos</li>
+    <li routerLink="/categorias" routerLinkActive="nav-active">Categorías</li>
+    <li routerLink="/usuarios" routerLinkActive="nav-active">Usuarios</li>
+    <li routerLink="/movimientos" routerLinkActive="nav-active">Movimientos</li>
+  </ul>
+
+  <div class="sidebar-footer">
+    <button type="button" class="sidebar-logout" (click)="logout()">
+      Cerrar sesión
+    </button>
+  </div>
+</div>

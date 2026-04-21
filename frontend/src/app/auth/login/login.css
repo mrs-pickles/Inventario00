@@ -1,0 +1,41 @@
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  background: linear-gradient(
+    160deg,
+    #f0fdf4 0%,
+    #ecfdf5 40%,
+    #f7fee7 100%
+  );
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.85rem;
+}
+
+.field input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+label {
+  margin-bottom: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #166534;
+}

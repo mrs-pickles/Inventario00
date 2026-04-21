@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  myDB:
+    image: postgres:15.3
+    container_name: inventario
+    restart: always
+    ports:
+      - 5223:5432
+    environment:
+      - POSTGRES_USER=inventario
+      - POSTGRES_PASSWORD=1844
+      - POSTGRES_DB=inventario-db
+    volumes:
+      - ./postgres_inventario:/var/lib/postgresql/data

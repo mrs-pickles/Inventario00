@@ -1,0 +1,9 @@
+.dashboard {
+  padding: 30px;
+}
+
+button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
