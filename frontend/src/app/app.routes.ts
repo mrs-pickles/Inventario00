@@ -6,17 +6,21 @@ import { Categorias } from './pages/categorias/categorias';
 import { Productos } from './pages/productos/productos';
 import { Movimientos } from './pages/movimientos/movimientos';
 import { Usuarios } from './pages/usuarios/usuarios';
+import { authGuard, guestGuard } from './guards/auth-guard';
 
 export const routes: Routes = [
   {
     path: 'login',
-    component: Login
+    component: Login,
+    canActivate: [guestGuard],
   },
 
   {
     path: '',
     component: Layout,
+    canActivate: [authGuard],
     children: [
+      { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
       {
         path: 'dashboard',
         component: Dashboard
