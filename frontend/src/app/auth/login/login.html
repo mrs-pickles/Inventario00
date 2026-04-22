@@ -1,41 +1,44 @@
-<div class="login-container">
-  <p-card header="Iniciar Sesión" class="login-card">
-    <form class="login-form" (ngSubmit)="iniciarSesion()">
-      <div class="field">
-        <label for="login-email">Email</label>
+<div class="admin-login" role="main">
+  <div class="admin-login__bg" aria-hidden="true"></div>
+  <div class="admin-login__card">
+    <h1 class="admin-login__title">Inicio de sesión</h1>
+    <form class="admin-login__form" (ngSubmit)="iniciarSesion()">
+      <div class="admin-login__field">
+        <label for="login-email">Ingrese su email:</label>
         <input
           id="login-email"
-          class="w-full"
-          pInputText
+          class="admin-login__input"
           type="email"
           [(ngModel)]="email"
           name="loginEmail"
           autocomplete="username"
-          placeholder="Ingrese su correo"
+          placeholder="correo@empresa.com"
         />
       </div>
-
-      <div class="field">
-        <label for="login-password">Contraseña</label>
+      <div class="admin-login__field">
+        <label for="login-password">Ingrese su contraseña:</label>
         <input
           id="login-password"
-          class="w-full"
-          pInputText
+          class="admin-login__input"
           type="password"
           [(ngModel)]="password"
           name="loginPassword"
           autocomplete="current-password"
-          placeholder="Ingrese su contraseña"
+          placeholder="Su contraseña"
         />
       </div>
-
-      <button
-        pButton
-        type="submit"
-        class="w-full"
-        label="Ingresar"
-        icon="pi pi-sign-in">
+      <label class="admin-login__remember">
+        <input
+          type="checkbox"
+          class="admin-login__checkbox"
+          name="staySignedIn"
+          [(ngModel)]="staySignedIn"
+        />
+        <span>Mantener la sesión iniciada</span>
+      </label>
+      <button type="submit" class="admin-login__submit">
+        Ingresar a la plataforma
       </button>
     </form>
-  </p-card>
+  </div>
 </div>

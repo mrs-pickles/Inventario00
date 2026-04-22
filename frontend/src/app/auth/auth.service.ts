@@ -24,21 +24,37 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/login`, data);
   }
 
-  saveToken(token: string) {
-    localStorage.setItem('token', token);
+  saveToken(token: string, persistent: boolean) {
+    if (persistent) {
+      localStorage.setItem('token', token);
+      sessionStorage.removeItem('token');
+    } else {
+      sessionStorage.setItem('token', token);
+      localStorage.removeItem('token');
+    }
   }
 
-  saveCurrentUser(user: SessionUser) {
-    localStorage.setItem(USER_KEY, JSON.stringify(user));
+  saveCurrentUser(user: SessionUser, persistent: boolean) {
+    const raw = JSON.stringify(user);
+    if (persistent) {
+      localStorage.setItem(USER_KEY, raw);
+      sessionStorage.removeItem(USER_KEY);
+    } else {
+      sessionStorage.setItem(USER_KEY, raw);
+      localStorage.removeItem(USER_KEY);
+    }
   }
 
   getToken() {
-    return localStorage.getItem('token');
+    return (
+      sessionStorage.getItem('token') ?? localStorage.getItem('token') ?? null
+    );
   }
 
   /** Datos del perfil para la UI (localStorage o payload del JWT). */
   getProfile(): ProfileView | null {
-    const raw = localStorage.getItem(USER_KEY);
+    const raw =
+      sessionStorage.getItem(USER_KEY) ?? localStorage.getItem(USER_KEY);
     if (raw) {
       try {
         const u = JSON.parse(raw) as SessionUser;
@@ -69,6 +85,8 @@ export class AuthService {
   logout() {
     localStorage.removeItem('token');
     localStorage.removeItem(USER_KEY);
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem(USER_KEY);
   }
 
   private initialsFromName(name: string): string {

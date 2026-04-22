@@ -2,21 +2,12 @@ import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { InputTextModule } from 'primeng/inputtext';
-import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
-
 import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [
-    FormsModule,
-    InputTextModule,
-    ButtonModule,
-    CardModule
-  ],
+  imports: [FormsModule],
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
@@ -27,6 +18,7 @@ export class Login {
 
   email = '';
   password = '';
+  staySignedIn = true;
 
   iniciarSesion() {
     const email = this.email?.trim() ?? '';
@@ -38,12 +30,12 @@ export class Login {
     }).subscribe({
       next: (res: any) => {
 
-        this.authService.saveToken(res.access_token);
+        this.authService.saveToken(res.access_token, this.staySignedIn);
         if (res.usuario) {
-          this.authService.saveCurrentUser(res.usuario);
+          this.authService.saveCurrentUser(res.usuario, this.staySignedIn);
         }
 
-        alert('Login correcto');
+        alert('Inicio de sesión correcto');
 
         this.router.navigate(['/dashboard']);
       },
