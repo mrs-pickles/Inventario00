@@ -1,15 +1,50 @@
-version: '3'
-
 services:
-  myDB:
+  db:
     image: postgres:15.3
-    container_name: inventario
-    restart: always
-    ports:
-      - 5223:5432
+    container_name: inventario-db
+    restart: unless-stopped
     environment:
-      - POSTGRES_USER=inventario
-      - POSTGRES_PASSWORD=1844
-      - POSTGRES_DB=inventario-db
+      POSTGRES_USER: inventario
+      POSTGRES_PASSWORD: "1844"
+      POSTGRES_DB: inventario-db
     volumes:
+      # Misma ruta que el compose anterior: los datos persisten en el disco del host.
       - ./postgres_inventario:/var/lib/postgresql/data
+    ports:
+      - "5223:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U inventario -d inventario-db"]
+      interval: 5s
+      timeout: 5s
+      retries: 8
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: inventario-api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_USER: inventario
+      DB_PASSWORD: "1844"
+      DB_NAME: inventario-db
+      DB_SYNC: "true"
+      PORT: "3000"
+    expose:
+      - "3000"
+
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: inventario-web
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "8080:80"
