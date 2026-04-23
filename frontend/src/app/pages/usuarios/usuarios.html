@@ -1,1 +1,216 @@
-<p>usuarios works!</p>
+<div class="usuarios-page">
+  <header class="usuarios-page__head">
+    <div class="usuarios-page__head-text">
+      <h1 class="usuarios-page__titulo">Usuarios</h1>
+      <p class="usuarios-page__sub">
+        Gestionar identidades, roles y acceso al sistema.
+      </p>
+    </div>
+    <button
+      pButton
+      type="button"
+      label="Crear nuevo"
+      icon="pi pi-plus"
+      class="usuarios-page__btn-crear"
+      (click)="abrirCrear()"
+    ></button>
+  </header>
+
+  @if (errorMsg) {
+    <p class="usuarios-page__err" role="alert">{{ errorMsg }}</p>
+  }
+
+  <p class="usuarios-page__cargando" [hidden]="!cargando">Cargando usuarios…</p>
+
+  <div class="usuarios-page__card" [class.is-dimmed]="cargando">
+    <div class="usuarios-page__search-wrap">
+      <i class="pi pi-search usuarios-page__search-ico" aria-hidden="true"></i>
+      <input
+        pInputText
+        type="search"
+        class="usuarios-page__search-input w-full"
+        placeholder="Buscar usuarios"
+        [(ngModel)]="searchText"
+        name="buscaUsuarios"
+        autocomplete="off"
+      />
+    </div>
+
+    <p-table
+      [value]="usuariosVista"
+      [paginator]="true"
+      [rows]="8"
+      [rowsPerPageOptions]="[8, 16, 32]"
+      responsiveLayout="stack"
+      styleClass="p-datatable-sm usuarios-page__tabla"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} usuarios"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Identidad</th>
+          <th class="th-rol" style="min-width: 8.5rem">Rol de acceso</th>
+          <th class="th-estado" style="width: 9rem; text-align: center">
+            Estado de cuenta
+          </th>
+          <th class="th-acc" style="width: 6.5rem; text-align: center">Acciones</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-u>
+        <tr>
+          <td>
+            <div class="cell-identidad">
+              <div class="cell-identidad__avatar" aria-hidden="true">
+                {{ iniciales(u.name, u.email) }}
+              </div>
+              <div class="cell-identidad__text">
+                <span class="cell-identidad__nombre">{{ u.name }}</span>
+                <span class="cell-identidad__email">{{ u.email }}</span>
+              </div>
+            </div>
+          </td>
+          <td class="td-rol">{{ u.rol }}</td>
+          <td class="td-centro">
+            <p-toggleswitch
+              [ngModel]="u.activo"
+              (ngModelChange)="onCambioActivo(u, $event)"
+              [name]="'act-' + u.id"
+              [inputId]="'act-' + u.id"
+            />
+          </td>
+          <td class="td-acc">
+            <button
+              pButton
+              type="button"
+              icon="pi pi-pencil"
+              [rounded]="true"
+              [text]="true"
+              class="usuarios-page__acc-btn"
+              pTooltip="Editar"
+              (click)="abrirEditar(u)"
+            ></button>
+            <button
+              pButton
+              type="button"
+              icon="pi pi-trash"
+              [rounded]="true"
+              [text]="true"
+              class="usuarios-page__acc-btn usuarios-page__acc-btn--del"
+              pTooltip="Eliminar"
+              (click)="eliminar(u)"
+            ></button>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="4" class="usuarios-page__empty">
+            <i class="pi pi-users" aria-hidden="true"></i>
+            @if (searchText.trim()) {
+              <span>Sin resultados. Pruebe otra búsqueda.</span>
+            } @else {
+              <span>No hay usuarios todavía. Use «Crear nuevo».</span>
+            }
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+<p-dialog
+  [header]="editando ? 'Editar usuario' : 'Nuevo usuario'"
+  [(visible)]="dialogoVisible"
+  [modal]="true"
+  [dismissableMask]="true"
+  [style]="{ width: 'min(32rem, 100vw - 1.5rem)' }"
+  [breakpoints]="{ '640px': '100vw' }"
+  [draggable]="false"
+  styleClass="usuarios-page__dialog"
+  (onHide)="cerrarDialogo()"
+>
+  <div class="usuarios-page__form">
+    <div class="field">
+      <label for="um-nombre">Nombre</label>
+      <input
+        pInputText
+        id="um-nombre"
+        class="w-full"
+        [(ngModel)]="form.name"
+        name="umNombre"
+        autocomplete="name"
+        placeholder="Nombre completo"
+      />
+    </div>
+    <div class="field">
+      <label for="um-email">Email</label>
+      <input
+        pInputText
+        id="um-email"
+        type="email"
+        class="w-full"
+        [(ngModel)]="form.email"
+        name="umEmail"
+        autocomplete="email"
+        placeholder="correo@dominio.com"
+      />
+    </div>
+    <div class="field">
+      <label for="um-rol">Rol de acceso</label>
+      <p-select
+        inputId="um-rol"
+        [options]="roles"
+        optionLabel="label"
+        optionValue="value"
+        [(ngModel)]="form.rol"
+        name="umRol"
+        styleClass="w-full"
+        appendTo="body"
+      />
+    </div>
+    <div class="field">
+      <label for="um-pw">{{
+        editando ? "Nueva contraseña (opcional)" : "Contraseña"
+      }}</label>
+      <input
+        pInputText
+        id="um-pw"
+        type="password"
+        class="w-full"
+        [(ngModel)]="form.password"
+        name="umPass"
+        [autocomplete]="editando ? 'new-password' : 'new-password'"
+        [placeholder]="
+          editando ? 'Dejar en blanco para no cambiar' : 'Mínimo 6 caracteres'
+        "
+      />
+    </div>
+    <div class="field field--switch">
+      <label for="um-activo">Cuenta activa</label>
+      <p-toggleswitch
+        inputId="um-activo"
+        [(ngModel)]="form.activo"
+        name="umActivo"
+      />
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      type="button"
+      label="Cancelar"
+      [text]="true"
+      (click)="cerrarDialogo()"
+      [disabled]="guardando"
+    ></button>
+    <button
+      pButton
+      type="button"
+      label="Guardar"
+      class="usuarios-page__btn-guardar"
+      icon="pi pi-check"
+      (click)="guardar()"
+      [disabled]="guardando"
+    ></button>
+  </ng-template>
+</p-dialog>

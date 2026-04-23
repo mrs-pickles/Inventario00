@@ -1,6 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
+import { environment } from '../../environments/environment';
+
 const USER_KEY = 'currentUser';
 
 export type SessionUser = {
@@ -18,7 +20,7 @@ export class AuthService {
 
   private http = inject(HttpClient);
 
-  private apiUrl = 'http://localhost:3000/api/auth';
+  private apiUrl = `${environment.apiBase}/auth`;
 
   login(data: any) {
     return this.http.post(`${this.apiUrl}/login`, data);
@@ -45,21 +47,40 @@ export class AuthService {
     }
   }
 
+  /**
+   * Tras login: quita restos viejos y aplica dónde guarda según «Mantener la sesión».
+   */
+  persistAfterLogin(
+    accessToken: string,
+    user: SessionUser | undefined,
+    keepOpen: boolean
+  ) {
+    this.logout();
+    this.saveToken(accessToken, keepOpen);
+    if (user) {
+      this.saveCurrentUser(user, keepOpen);
+    }
+  }
+
   getToken() {
+    // localStorage = sesión persistente; sessionStorage = solo en esta ventana
     return (
-      sessionStorage.getItem('token') ?? localStorage.getItem('token') ?? null
+      localStorage.getItem('token') ?? sessionStorage.getItem('token') ?? null
     );
   }
 
   /** Datos del perfil para la UI (localStorage o payload del JWT). */
   getProfile(): ProfileView | null {
     const raw =
-      sessionStorage.getItem(USER_KEY) ?? localStorage.getItem(USER_KEY);
+      localStorage.getItem(USER_KEY) ?? sessionStorage.getItem(USER_KEY);
     if (raw) {
       try {
         const u = JSON.parse(raw) as SessionUser;
         if (u?.email) {
-          return { ...u, initials: this.initialsFromName(u.name || u.email) };
+          const displayName = this.nameForDisplay(
+            u.name || u.email.split('@')[0] || 'Usuario',
+          );
+          return { ...u, name: displayName, initials: this.initialsFromName(displayName) };
         }
       } catch {
         /* ignore */
@@ -73,12 +94,14 @@ export class AuthService {
     if (!payload?.email) {
       return null;
     }
-    const name = payload.name || payload.email.split('@')[0] || 'Usuario';
+    const displayName = this.nameForDisplay(
+      payload.name || payload.email.split('@')[0] || 'Usuario',
+    );
     return {
       id: Number(payload.sub) || 0,
-      name,
+      name: displayName,
       email: payload.email,
-      initials: this.initialsFromName(name),
+      initials: this.initialsFromName(displayName),
     };
   }
 
@@ -87,6 +110,24 @@ export class AuthService {
     localStorage.removeItem(USER_KEY);
     sessionStorage.removeItem('token');
     sessionStorage.removeItem(USER_KEY);
+  }
+
+  /** Tipo título: primera letra de cada palabra en mayúscula (español). */
+  private nameForDisplay(name: string): string {
+    if (!name?.trim()) {
+      return name?.trim() ?? '';
+    }
+    return name
+      .trim()
+      .split(/\s+/)
+      .map((word) => {
+        if (!word) {
+          return word;
+        }
+        const lower = word.toLocaleLowerCase('es');
+        return lower.charAt(0).toLocaleUpperCase('es') + lower.slice(1);
+      })
+      .join(' ');
   }
 
   private initialsFromName(name: string): string {

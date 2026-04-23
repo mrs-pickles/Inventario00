@@ -1,219 +1,430 @@
-<div class="productos-page">
-  <header class="page-hero">
-    <div class="page-hero-icon" aria-hidden="true">
-      <i class="pi pi-box"></i>
-    </div>
-    <div>
-      <h1 class="page-title">Productos</h1>
-      <p class="page-subtitle">Alta, edición y control de stock</p>
-    </div>
+<div class="productos">
+  <header class="productos__barra">
+    <h1 class="productos__titulo">
+      Productos por categoría
+      @if (productos.length > 0) {
+        <span class="productos__contador" aria-live="polite">({{ productos.length }} en inventario)</span>
+      }
+    </h1>
+    <button
+      pButton
+      type="button"
+      label="Crear producto"
+      icon="pi pi-plus"
+      class="productos__btn-crear"
+      (click)="abrirCrear()"
+    ></button>
   </header>
 
-  <div class="productos-grid">
-    <p-card styleClass="productos-form-card">
-      <div class="card-head">
-        <i
-          class="pi card-head-icon"
-          [ngClass]="editando ? 'pi-pencil' : 'pi-plus-circle'"
-          aria-hidden="true"
-        ></i>
-        <div>
-          <h2 class="card-head-title">
-            {{ editando ? 'Editar producto' : 'Registrar producto' }}
-          </h2>
-          <p class="card-head-desc">
-            {{
-              editando
-                ? 'Ajusta los datos y pulsa actualizar.'
-                : 'Completa los campos para añadir al catálogo.'
-            }}
-          </p>
-        </div>
-      </div>
+  @if (errorMsg) {
+    <p class="productos__alert productos__alert--error" role="alert">{{ errorMsg }}</p>
+  }
 
-      <div class="form-stack">
-        <div class="field">
-          <label for="prod-nombre">Nombre</label>
-          <div class="input-with-icon">
-            <i class="pi pi-tag" aria-hidden="true"></i>
+  @if (cargando) {
+    <p class="productos__alert productos__alert--info">Cargando productos…</p>
+  }
+
+  <div class="productos__toolbar">
+    <span class="p-input-icon-left productos__buscador">
+      <i class="pi pi-search" aria-hidden="true"></i>
+      <input
+        pInputText
+        type="search"
+        class="w-full"
+        placeholder="Buscar producto, SKU o categoría"
+        [(ngModel)]="searchText"
+        (ngModelChange)="onBusquedaCambiada()"
+        name="buscarProd"
+        autocomplete="off"
+      />
+    </span>
+    <div class="productos__orden" role="group" aria-label="Ordenar">
+      <button
+        pButton
+        type="button"
+        [text]="true"
+        [rounded]="true"
+        icon="pi pi-sort-alpha-up"
+        [class.is-active]="orden === 'nombre' && ordenAsc"
+        pTooltip="A–Z"
+        (click)="setOrden('nombre')"
+      ></button>
+      <button
+        pButton
+        type="button"
+        [text]="true"
+        [rounded]="true"
+        icon="pi pi-sort-amount-up"
+        pTooltip="Por precio"
+        [class.is-active]="orden === 'precio'"
+        (click)="setOrden('precio')"
+      ></button>
+    </div>
+  </div>
+
+  <div class="productos__tabla-wrap">
+    <div class="productos__paginador" role="navigation" aria-label="Paginación">
+      <span class="productos__paginador-info">{{ paginaReporte }}</span>
+      <label class="productos__paginador-rows">
+        <span class="sr-only">Filas por página</span>
+        <select
+          class="productos__select-rows"
+          [(ngModel)]="filasPorPagina"
+          (ngModelChange)="onFilasPorPaginaChange($event)"
+          name="filasPag"
+        >
+          @for (n of [10, 25, 50]; track n) {
+            <option [ngValue]="n">{{ n }}</option>
+          }
+        </select>
+      </label>
+      <button
+        pButton
+        type="button"
+        icon="pi pi-angle-left"
+        [text]="true"
+        [rounded]="true"
+        [disabled]="pagina <= 0"
+        (click)="paginaAnterior()"
+        aria-label="Página anterior"
+      ></button>
+      <button
+        pButton
+        type="button"
+        icon="pi pi-angle-right"
+        [text]="true"
+        [rounded]="true"
+        [disabled]="pagina >= totalPaginas - 1"
+        (click)="paginaSiguiente()"
+        aria-label="Página siguiente"
+      ></button>
+    </div>
+
+    <div class="productos__tabla-scroll">
+      <table class="productos__tabla-html">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th class="col-sku">SKU</th>
+            <th>Categoría</th>
+            <th class="th-numero">Costo (Bs.)</th>
+            <th class="th-numero">Precio (Bs.)</th>
+            <th class="th-numero">Stock</th>
+            <th class="th-activo">Activo</th>
+            <th class="th-acc">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of productosPagina; track p.id) {
+            <tr>
+              <td>
+                <span class="cell-name">
+                  <i class="pi pi-box" aria-hidden="true"></i>
+                  {{ p.nombre }}
+                </span>
+              </td>
+              <td><span class="cell-sku">{{ sku(p) }}</span></td>
+              <td>
+                @if (p.categoria?.nombre) {
+                  <p-tag
+                    [value]="p.categoria.nombre"
+                    [rounded]="true"
+                    [style]="{ background: 'rgba(90, 111, 93, 0.15)', color: 'var(--ref-text, #2c2b28)' }"
+                  />
+                } @else {
+                  <span class="text-muted">—</span>
+                }
+              </td>
+              <td class="td-num">Bs. {{ moneda(p.costo) }}</td>
+              <td class="td-num">Bs. {{ moneda(p.precio) }}</td>
+              <td class="td-num">{{ p.stock | number: '1.0-0' }}</td>
+              <td>
+                <p-toggleswitch
+                  [ngModel]="p.activo"
+                  (ngModelChange)="onActivoChange($event, p)"
+                  [name]="'act-' + p.id"
+                  [inputId]="'act-' + p.id"
+                />
+              </td>
+              <td class="td-acc">
+                <button
+                  pButton
+                  type="button"
+                  icon="pi pi-pencil"
+                  [rounded]="true"
+                  [text]="true"
+                  severity="secondary"
+                  pTooltip="Editar"
+                  (click)="abrirEditar(p)"
+                ></button>
+                <button
+                  pButton
+                  type="button"
+                  icon="pi pi-trash"
+                  [rounded]="true"
+                  [text]="true"
+                  severity="danger"
+                  pTooltip="Eliminar"
+                  (click)="eliminarProducto(p.id)"
+                ></button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="8" class="empty-table">
+                <i class="pi pi-inbox" aria-hidden="true"></i>
+                <span>
+                  @if (searchText.trim()) {
+                    No hay resultados. Prueba otra búsqueda.
+                  } @else if (cargando) {
+                    Cargando…
+                  } @else {
+                    No hay productos aún. Si esperaba el catálogo Little Trees, reinicie el contenedor
+                    <strong>api</strong> para volver a sembrar. También puede pulsar
+                    <strong>Crear producto</strong>.
+                  }
+                </span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <p-dialog
+    [header]="editando ? 'Editar producto' : 'Crear producto'"
+    [(visible)]="mostrarFormulario"
+    [modal]="true"
+    [dismissableMask]="true"
+    [draggable]="false"
+    [resizable]="false"
+    [style]="{ width: 'min(52rem, 98vw)' }"
+    styleClass="productos__dialog"
+    (onHide)="onDialogHide()"
+  >
+    <div class="productos__form-dlg">
+      <section class="productos__panel" aria-labelledby="crear-prod-tit">
+        <h2 id="crear-prod-tit" class="productos__panel-title">
+          {{ editando ? 'Datos del producto' : 'Crear producto' }}
+        </h2>
+        <div class="productos__layout-principal">
+          <div class="productos__columna-datos">
+            <div class="productos__grid-2">
+              <div class="field">
+                <label for="pf-nombre">Nombre</label>
+                <input
+                  pInputText
+                  id="pf-nombre"
+                  class="w-full"
+                  [(ngModel)]="nuevoProducto.nombre"
+                  name="pfNombre"
+                  placeholder="Ej. Black Ice"
+                />
+              </div>
+              <div class="field">
+                <label for="pf-codigo">Código</label>
+                <input
+                  pInputText
+                  id="pf-codigo"
+                  class="w-full"
+                  [(ngModel)]="nuevoProducto.codigo"
+                  name="pfCodigo"
+                  placeholder="Código interno"
+                />
+              </div>
+            </div>
+            <div class="productos__grid-4">
+              <div class="field">
+                <label for="pf-sku">SKU</label>
+                <input
+                  pInputText
+                  id="pf-sku"
+                  class="w-full"
+                  [(ngModel)]="nuevoProducto.sku"
+                  name="pfSku"
+                  placeholder="Opcional (si vacío, se genera PRD-…)"
+                />
+              </div>
+              <div class="field">
+                <label for="pf-cat">Categoría</label>
+                <p-select
+                  inputId="pf-cat"
+                  [options]="categorias"
+                  optionLabel="nombre"
+                  optionValue="id"
+                  [showClear]="true"
+                  placeholder="Categoría"
+                  [(ngModel)]="nuevoProducto.categoriaId"
+                  name="pfCategoria"
+                  styleClass="w-full"
+                  appendTo="body"
+                />
+              </div>
+              <div class="field">
+                <label for="pf-origen">Origen</label>
+                <input
+                  pInputText
+                  id="pf-origen"
+                  class="w-full"
+                  [(ngModel)]="nuevoProducto.origen"
+                  name="pfOrigen"
+                  placeholder="Origen / proveedencia"
+                />
+              </div>
+              <div class="field">
+                <label for="pf-cant">Cantidad (stock)</label>
+                <p-inputNumber
+                  inputId="pf-cant"
+                  [(ngModel)]="nuevoProducto.stock"
+                  name="pfStockCant"
+                  [min]="0"
+                  [useGrouping]="true"
+                  styleClass="w-full"
+                  [showButtons]="false"
+                />
+              </div>
+            </div>
+            <div class="field">
+              <label for="pf-desc">Descripción</label>
+              <textarea
+                id="pf-desc"
+                class="w-full p-inputtext p-component productos__textarea"
+                rows="3"
+                [(ngModel)]="nuevoProducto.descripcion"
+                name="pfDesc"
+                placeholder="Notas, presentación, variantes…"
+              ></textarea>
+            </div>
+          </div>
+          <div class="field productos__field-imagen">
+            <span class="productos__imagen-label">Imagen del producto</span>
+            <div
+              class="productos__imagen-box"
+              role="button"
+              tabindex="0"
+              (click)="imagenFile.click()"
+              (keydown.enter)="imagenFile.click()"
+            >
+              @if (nuevoProducto.imagen) {
+                <img [src]="nuevoProducto.imagen" alt="" class="productos__imagen-preview" />
+                <span class="productos__imagen-cambiar">Cambiar imagen</span>
+              } @else {
+                <i class="pi pi-image productos__imagen-icon" aria-hidden="true"></i>
+                <i class="pi pi-upload productos__imagen-upload" aria-hidden="true"></i>
+                <span class="productos__imagen-hint">Clic o arrastra (máx. 1,5 MB)</span>
+              }
+            </div>
             <input
-              id="prod-nombre"
-              pInputText
-              class="w-full"
-              [(ngModel)]="nuevoProducto.nombre"
-              name="prodNombre"
-              placeholder="Ej. Resma A4"
+              #imagenFile
+              type="file"
+              accept="image/*"
+              class="productos__imagen-input"
+              (change)="onFileImagen($event)"
             />
+            @if (nuevoProducto.imagen) {
+              <button
+                pButton
+                type="button"
+                label="Quitar imagen"
+                class="p-button-text p-button-sm mt-1"
+                (click)="quitarImagen()"
+              ></button>
+            }
           </div>
         </div>
+      </section>
 
-        <div class="field-row">
+      <section class="productos__panel" aria-labelledby="precio-stock-tit">
+        <h2 id="precio-stock-tit" class="productos__panel-title">Precio y stock</h2>
+        <div class="productos__grid-3">
           <div class="field">
-            <label for="prod-precio">Precio</label>
+            <label for="pf-costo">Precio de compra (Bs.)</label>
             <p-inputNumber
-              inputId="prod-precio"
-              [(ngModel)]="nuevoProducto.precio"
-              name="prodPrecio"
+              inputId="pf-costo"
+              [(ngModel)]="nuevoProducto.costo"
+              name="pfCosto"
               mode="decimal"
               [min]="0"
               [minFractionDigits]="2"
               [maxFractionDigits]="2"
-              placeholder="0.00"
               styleClass="w-full"
               [showButtons]="false"
+              placeholder="0,00"
             />
           </div>
           <div class="field">
-            <label for="prod-stock">Stock</label>
+            <label for="pf-precio">Precio de venta (Bs.)</label>
             <p-inputNumber
-              inputId="prod-stock"
-              [(ngModel)]="nuevoProducto.stock"
-              name="prodStock"
+              inputId="pf-precio"
+              [(ngModel)]="nuevoProducto.precio"
+              name="pfPrecio"
+              mode="decimal"
               [min]="0"
-              [useGrouping]="false"
-              placeholder="0"
+              [minFractionDigits]="2"
+              [maxFractionDigits]="2"
+              styleClass="w-full"
+              [showButtons]="false"
+              placeholder="0,00"
+            />
+          </div>
+          <div class="field">
+            <label for="pf-stmin">Stock mínimo</label>
+            <p-inputNumber
+              inputId="pf-stmin"
+              [(ngModel)]="nuevoProducto.stockMinimo"
+              name="pfStMin"
+              [min]="0"
+              [useGrouping]="true"
               styleClass="w-full"
               [showButtons]="false"
             />
           </div>
         </div>
-
-        <div class="field">
-          <label for="prod-cat">Categoría</label>
-          <p-select
-            inputId="prod-cat"
-            [(ngModel)]="nuevoProducto.categoriaId"
-            name="prodCategoria"
-            [options]="categorias"
-            optionLabel="nombre"
-            optionValue="id"
-            placeholder="Seleccione categoría"
-            [showClear]="true"
-            styleClass="w-full"
-            appendTo="body"
+        <div class="field productos__proveedor">
+          <label for="pf-prov">Proveedor</label>
+          <input
+            pInputText
+            id="pf-prov"
+            class="w-full"
+            [(ngModel)]="nuevoProducto.proveedor"
+            name="pfProveedor"
+            placeholder="Nombre del proveedor"
           />
         </div>
-
-        <div class="form-actions">
-          <button
-            pButton
-            type="button"
-            [label]="editando ? 'Actualizar' : 'Guardar'"
-            [icon]="editando ? 'pi pi-check' : 'pi pi-save'"
-            class="w-full"
-            (click)="guardarProducto()"
-            [disabled]="
-              !nuevoProducto.nombre.trim() ||
-              nuevoProducto.categoriaId == null ||
-              nuevoProducto.categoriaId === 0
-            "
-          ></button>
-          @if (editando) {
-            <button
-              pButton
-              type="button"
-              label="Cancelar"
-              icon="pi pi-times"
-              severity="secondary"
-              [outlined]="true"
-              class="w-full"
-              (click)="resetFormulario()"
-            ></button>
-          }
+        <div class="field productos__activo-fila">
+          <label for="pf-activo" class="mb-0">Activo (visible en ventas)</label>
+          <p-toggleswitch
+            inputId="pf-activo"
+            name="pfActivo"
+            [(ngModel)]="nuevoProducto.activo"
+          />
         </div>
+      </section>
+    </div>
+    <ng-template pTemplate="footer">
+      <div class="productos__footer-actions">
+        <button
+          pButton
+          type="button"
+          label="Cancelar"
+          class="productos__btn-sec"
+          (click)="cerrarFormulario()"
+        ></button>
+        <button
+          pButton
+          type="button"
+          [label]="editando ? 'Guardar cambios' : 'Guardar'"
+          icon="pi pi-check"
+          class="productos__btn-osc"
+          (click)="guardarProducto()"
+          [disabled]="
+            !nuevoProducto.nombre.trim() ||
+            nuevoProducto.categoriaId == null ||
+            nuevoProducto.categoriaId === 0
+          "
+        ></button>
       </div>
-    </p-card>
-
-    <p-card styleClass="productos-table-card">
-      <div class="card-head">
-        <i class="pi pi-list card-head-icon" aria-hidden="true"></i>
-        <div>
-          <h2 class="card-head-title">Catálogo</h2>
-          <p class="card-head-desc">{{ productos.length }} producto(s)</p>
-        </div>
-      </div>
-
-      <p-table
-        [value]="productos"
-        [paginator]="true"
-        [rows]="8"
-        [rowsPerPageOptions]="[8, 16, 32]"
-        responsiveLayout="stack"
-        styleClass="p-datatable-sm productos-table"
-        [stripedRows]="true"
-      >
-        <ng-template pTemplate="header">
-          <tr>
-            <th style="width: 4rem">ID</th>
-            <th>Nombre</th>
-            <th style="width: 7rem">Precio</th>
-            <th style="width: 6rem">Stock</th>
-            <th>Categoría</th>
-            <th style="width: 7rem; text-align: center">Acciones</th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-p>
-          <tr>
-            <td>{{ p.id }}</td>
-            <td>
-              <span class="cell-name">
-                <i class="pi pi-box cell-lead-icon" aria-hidden="true"></i>
-                {{ p.nombre }}
-              </span>
-            </td>
-            <td>{{ p.precio | number : '1.2-2' }}</td>
-            <td>
-              <span class="stock-pill">
-                <i class="pi pi-database" aria-hidden="true"></i>
-                {{ p.stock }}
-              </span>
-            </td>
-            <td>
-              @if (p.categoria?.nombre) {
-                <p-tag
-                  [value]="p.categoria.nombre"
-                  severity="success"
-                  [rounded]="true"
-                />
-              } @else {
-                <span class="text-muted">—</span>
-              }
-            </td>
-            <td class="actions-cell">
-              <button
-                pButton
-                type="button"
-                icon="pi pi-pencil"
-                [rounded]="true"
-                [text]="true"
-                severity="secondary"
-                pTooltip="Editar"
-                tooltipPosition="top"
-                (click)="editarProducto(p)"
-              ></button>
-              <button
-                pButton
-                type="button"
-                icon="pi pi-trash"
-                [rounded]="true"
-                [text]="true"
-                severity="danger"
-                pTooltip="Eliminar"
-                tooltipPosition="top"
-                (click)="eliminarProducto(p.id)"
-              ></button>
-            </td>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="emptymessage">
-          <tr>
-            <td colspan="6" class="empty-table">
-              <i class="pi pi-inbox" aria-hidden="true"></i>
-              <span>No hay productos todavía.</span>
-            </td>
-          </tr>
-        </ng-template>
-      </p-table>
-    </p-card>
-  </div>
+    </ng-template>
+  </p-dialog>
 </div>

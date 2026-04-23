@@ -6,6 +6,8 @@ import { Categorias } from './pages/categorias/categorias';
 import { Productos } from './pages/productos/productos';
 import { Movimientos } from './pages/movimientos/movimientos';
 import { Usuarios } from './pages/usuarios/usuarios';
+import { Catalogo } from './pages/catalogo/catalogo';
+import { Reporte } from './pages/reporte/reporte';
 import { authGuard, guestGuard } from './guards/auth-guard';
 
 export const routes: Routes = [
@@ -26,12 +28,20 @@ export const routes: Routes = [
         component: Dashboard
       },
       {
+        path: 'reporte',
+        component: Reporte,
+      },
+      {
         path: 'categorias',
         component: Categorias
       },
       {
         path: 'productos',
         component: Productos
+      },
+      {
+        path: 'catalogo',
+        component: Catalogo
       },
       {
         path: 'movimientos',

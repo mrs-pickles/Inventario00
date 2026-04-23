@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
@@ -11,14 +11,20 @@ import { AuthService } from '../auth.service';
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
-export class Login {
+export class Login implements OnInit {
 
   private authService = inject(AuthService);
   private router = inject(Router);
 
   email = '';
   password = '';
-  staySignedIn = true;
+  /** Solo si el usuario marca la casilla: guardar en localStorage (cierre de navegador: sigue la sesión). */
+  staySignedIn = false;
+
+  ngOnInit() {
+    // Al entrar a /login, siempre sin marcar (evita estado previo o restauración del navegador).
+    this.staySignedIn = false;
+  }
 
   iniciarSesion() {
     const email = this.email?.trim() ?? '';
@@ -29,11 +35,12 @@ export class Login {
       password
     }).subscribe({
       next: (res: any) => {
-
-        this.authService.saveToken(res.access_token, this.staySignedIn);
-        if (res.usuario) {
-          this.authService.saveCurrentUser(res.usuario, this.staySignedIn);
-        }
+        const keepOpen = this.staySignedIn === true;
+        this.authService.persistAfterLogin(
+          res.access_token,
+          res.usuario,
+          keepOpen
+        );
 
         alert('Inicio de sesión correcto');
 

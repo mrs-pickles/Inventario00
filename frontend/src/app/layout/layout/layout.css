@@ -1,12 +1,55 @@
-.layout-container {
+:host {
   display: flex;
-  min-height: calc(100vh - 56px);
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  width: 100%;
 }
 
+.layout-shell {
+  display: flex;
+  width: 100%;
+  min-height: 100dvh;
+  flex: 1 0 auto;
+  align-items: stretch;
+  background: var(--ref-panel, #d2d6cc);
+}
+
+.layout-sidebar-col {
+  flex: 0 0 256px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  align-self: stretch;
+  min-width: 0;
+  min-height: 0;
+  max-width: 100%;
+}
+
+.layout-main-col {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--ref-panel, #d2d6cc);
+}
+
+/* Misma familia cromática que el mock: panel verdoso claro */
 .content {
   flex: 1;
+  min-height: 0;
   min-width: 0;
-  padding: 1.25rem 1.5rem;
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 1.5rem 1.75rem 2rem;
+  background: linear-gradient(
+    185deg,
+    #dce0d8 0%,
+    var(--ref-panel, #d2d6cc) 50%,
+    #c8cdc4 100%
+  );
+  border-left: 1px solid rgba(0, 0, 0, 0.06);
 }

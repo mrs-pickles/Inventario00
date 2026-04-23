@@ -4,20 +4,64 @@
       <div class="profile-avatar" aria-hidden="true">{{ p.initials }}</div>
       <div class="profile-text">
         <span class="profile-name">{{ p.name }}</span>
+        <span class="profile-role">Administrador</span>
         <span class="profile-email">{{ p.email }}</span>
       </div>
     </div>
   }
 
-  <h2>Inventario</h2>
+  <h2 class="sidebar-section">Inventario</h2>
 
-  <ul class="sidebar-nav">
-    <li routerLink="/dashboard" routerLinkActive="nav-active">Dashboard</li>
-    <li routerLink="/productos" routerLinkActive="nav-active">Productos</li>
-    <li routerLink="/categorias" routerLinkActive="nav-active">Categorías</li>
-    <li routerLink="/usuarios" routerLinkActive="nav-active">Usuarios</li>
-    <li routerLink="/movimientos" routerLinkActive="nav-active">Movimientos</li>
-  </ul>
+  <nav class="sidebar-nav" aria-label="Secciones">
+    <ul>
+      <li>
+        <a
+          routerLink="/dashboard"
+          routerLinkActive="nav-link--active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <i class="pi pi-th-large" aria-hidden="true"></i>
+          <span>Dashboard</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/reporte" routerLinkActive="nav-link--active">
+          <i class="pi pi-chart-bar" aria-hidden="true"></i>
+          <span>Reportes</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/productos" routerLinkActive="nav-link--active">
+          <i class="pi pi-box" aria-hidden="true"></i>
+          <span>Productos</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/catalogo" routerLinkActive="nav-link--active">
+          <i class="pi pi-book" aria-hidden="true"></i>
+          <span>Catálogo</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/categorias" routerLinkActive="nav-link--active">
+          <i class="pi pi-sitemap" aria-hidden="true"></i>
+          <span>Categorías</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/usuarios" routerLinkActive="nav-link--active">
+          <i class="pi pi-users" aria-hidden="true"></i>
+          <span>Usuarios</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/movimientos" routerLinkActive="nav-link--active">
+          <i class="pi pi-arrows-h" aria-hidden="true"></i>
+          <span>Movimientos</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
 
   <div class="sidebar-footer">
     <button type="button" class="sidebar-logout" (click)="logout()">

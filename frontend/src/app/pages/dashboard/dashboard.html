@@ -1,7 +1,126 @@
 <div class="dashboard">
-  <h1>Bienvenida al Sistema de Inventario</h1>
+  @if (errorMsg) {
+    <p class="dashboard__err">{{ errorMsg }}</p>
+  }
 
-  <p>Has iniciado sesión correctamente.</p>
+  <p class="dashboard__loading" [hidden]="!cargando">Cargando…</p>
 
-  <button (click)="logout()">Cerrar sesión</button>
+  <div class="dashboard__year dashboard__year--top">
+    <label for="anio">Año de consulta</label>
+    <select
+      id="anio"
+      name="anio"
+      class="dashboard__select"
+      [(ngModel)]="anio"
+      (ngModelChange)="onAnioChange()"
+    >
+      @for (a of anios; track a) {
+        <option [ngValue]="a">{{ a }}</option>
+      }
+    </select>
+  </div>
+
+  <section
+    class="dashboard__kpi"
+    [class.dashboard__kpi--dimmed]="cargando"
+  >
+    <div class="dashboard__kpi-card">
+      <i class="pi pi-th-large" aria-hidden="true"></i>
+      <div class="dashboard__kpi-body">
+        <span class="dashboard__kpi-value">{{ fmt(resumen.totalProductos) }}</span>
+        <span class="dashboard__kpi-label">Total de productos</span>
+      </div>
+    </div>
+    <div class="dashboard__kpi-card">
+      <i class="pi pi-box" aria-hidden="true"></i>
+      <div class="dashboard__kpi-body">
+        <span class="dashboard__kpi-value">{{ fmt(resumen.productosAgotados) }}</span>
+        <span class="dashboard__kpi-label">Productos agotados</span>
+      </div>
+    </div>
+    <div class="dashboard__kpi-card">
+      <i class="pi pi-replay" aria-hidden="true"></i>
+      <div class="dashboard__kpi-body">
+        <span class="dashboard__kpi-value">{{ fmt(resumen.devoluciones) }}</span>
+        <span class="dashboard__kpi-label">Devoluciones</span>
+      </div>
+    </div>
+    <div class="dashboard__kpi-card">
+      <i class="pi pi-chart-line" aria-hidden="true"></i>
+      <div class="dashboard__kpi-body">
+        <span class="dashboard__kpi-value"
+          >{{ fmt(resumen.valorInventarioBs) }} Bs</span
+        >
+        <span class="dashboard__kpi-label">Valor de inventario</span>
+      </div>
+    </div>
+    <div class="dashboard__kpi-card">
+      <i class="pi pi-shopping-bag" aria-hidden="true"></i>
+      <div class="dashboard__kpi-body">
+        <span class="dashboard__kpi-value">{{ fmt(resumen.pedidosEnCamino) }}</span>
+        <span class="dashboard__kpi-label">Pedidos en camino</span>
+      </div>
+    </div>
+  </section>
+
+  <div
+    class="dashboard__charts"
+    [class.dashboard__charts--dimmed]="cargando"
+  >
+    <div class="dashboard__chart-wrap">
+      <canvas #catCanvas class="dashboard__canvas"></canvas>
+    </div>
+    <div class="dashboard__chart-wrap">
+      <canvas #lineCanvas class="dashboard__canvas"></canvas>
+    </div>
+    <div class="dashboard__chart-wrap">
+      <canvas #ganaCanvas class="dashboard__canvas"></canvas>
+    </div>
+  </div>
+
+  <section class="dashboard__topsell">
+    <h2 class="dashboard__topsell-title">Productos más vendidos</h2>
+    <div class="dashboard__topsell-hint">
+      Unidades vendidas (salidas) en {{ anio }} — arrastra o usa las flechas.
+    </div>
+    <div class="dashboard__carousel" [class.dashboard__carousel--dimmed]="cargando">
+      <button
+        type="button"
+        class="dashboard__carousel-btn"
+        (click)="scrollCarousel(-1)"
+        aria-label="Anterior"
+      >
+        <i class="pi pi-chevron-left" aria-hidden="true"></i>
+      </button>
+      <div
+        #carouselTrack
+        class="dashboard__carousel-track"
+        tabindex="0"
+        role="region"
+        [attr.aria-label]="'Productos más vendidos, año ' + anio"
+      >
+        @for (p of topVendidos; track $index) {
+          <div class="dashboard__carousel-item">
+            <div class="dashboard__carousel-avatar" aria-hidden="true">
+              {{ iniciales(p.nombre) }}
+            </div>
+            <p class="dashboard__carousel-name">{{ p.nombre }}</p>
+            <p class="dashboard__carousel-units">
+              <strong>{{ fmt(p.cantidad) }}</strong> u.
+            </p>
+          </div>
+        } @empty {
+          <p class="dashboard__carousel-empty">No hay ventas en este año aún.</p>
+        }
+      </div>
+      <button
+        type="button"
+        class="dashboard__carousel-btn"
+        (click)="scrollCarousel(1)"
+        aria-label="Siguiente"
+      >
+        <i class="pi pi-chevron-right" aria-hidden="true"></i>
+      </button>
+    </div>
+  </section>
 </div>

@@ -1,1 +1,134 @@
-<p>movimientos works!</p>
+<div class="mov-compra">
+  <header class="mov-compra__barra">
+    <button
+      pButton
+      type="button"
+      label="Registrar compra"
+      icon="pi pi-shopping-cart"
+      class="mov-compra__btn-crear"
+      (click)="abrirRegistrar()"
+    ></button>
+  </header>
+
+  @if (errorMsg) {
+    <p class="mov-compra__err" role="alert">{{ errorMsg }}</p>
+  }
+
+  <p class="mov-compra__cargando" [hidden]="!cargando">Cargando movimientos…</p>
+
+  <p-table
+    [value]="compras"
+    [paginator]="true"
+    [rows]="10"
+    [rowsPerPageOptions]="[10, 20, 40]"
+    responsiveLayout="scroll"
+    styleClass="p-datatable-sm mov-compra__tabla"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 4.5rem">ID</th>
+        <th style="width: 6.5rem">Tipo</th>
+        <th>Producto</th>
+        <th class="th-num">Cant. compra</th>
+        <th class="th-num">Precio compra (u.)</th>
+        <th class="th-num">Total compra (Bs.)</th>
+        <th class="th-num">Stock total</th>
+        <th style="width: 9rem">Fecha</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-m>
+      <tr>
+        <td class="td-id">{{ m.id }}</td>
+        <td class="td-tipo">{{ etiquetaTipo(m) }}</td>
+        <td>
+          <span class="mov-compra__prod">{{ m.producto?.nombre ?? '—' }}</span>
+        </td>
+        <td class="td-num">{{ m.cantidad | number: '1.0-0' }}</td>
+        <td class="td-num">{{ moneda(precioUnitario(m)) }}</td>
+        <td class="td-num">{{ moneda(totalLinea(m)) }}</td>
+        <td class="td-num td-stock">{{ stockProducto(m) | number: '1.0-0' }}</td>
+        <td class="td-fecha">{{ formatFecha(m.fecha) }}</td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="8" class="mov-compra__empty">
+          <i class="pi pi-inbox" aria-hidden="true"></i>
+          <span>No hay registros.</span>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <p-dialog
+    header="Registrar compra"
+    [(visible)]="mostrarFormulario"
+    [modal]="true"
+    [dismissableMask]="true"
+    [draggable]="false"
+    [resizable]="false"
+    [style]="{ width: 'min(26rem, 95vw)' }"
+    styleClass="mov-compra__dialog"
+    (onHide)="cerrarForm()"
+  >
+    <div class="mov-compra__form">
+      <div class="field">
+        <label for="mc-prod">Producto</label>
+        <p-select
+          inputId="mc-prod"
+          [options]="productosOpciones"
+          optionLabel="nombre"
+          optionValue="id"
+          placeholder="Seleccione producto"
+          [(ngModel)]="formProductoId"
+          name="mcProducto"
+          styleClass="w-full"
+          appendTo="body"
+        />
+      </div>
+      <div class="field">
+        <label for="mc-cant">Cantidad de compra</label>
+        <p-inputNumber
+          inputId="mc-cant"
+          [(ngModel)]="formCantidad"
+          name="mcCantidad"
+          [min]="1"
+          [showButtons]="true"
+          styleClass="w-full"
+        />
+      </div>
+      <div class="field">
+        <label for="mc-precio">Precio de compra (unitario, Bs.)</label>
+        <p-inputNumber
+          inputId="mc-precio"
+          [(ngModel)]="formPrecioCompra"
+          name="mcPrecio"
+          mode="decimal"
+          [min]="0"
+          [maxFractionDigits]="4"
+          styleClass="w-full"
+        />
+      </div>
+      <div class="mov-compra__footer-btns">
+        <button
+          pButton
+          type="button"
+          label="Cancelar"
+          class="mov-compra__btn-sec"
+          (click)="cerrarForm()"
+        ></button>
+        <button
+          pButton
+          type="button"
+          label="Guardar compra"
+          icon="pi pi-check"
+          class="mov-compra__btn-pri"
+          (click)="guardarCompra()"
+          [disabled]="!formProductoId || formCantidad < 1"
+        ></button>
+      </div>
+    </div>
+  </p-dialog>
+</div>

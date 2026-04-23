@@ -1,45 +1,194 @@
-<h1>Categorías</h1>
+<div class="cat">
+  <header class="cat__barra">
+    <h1 class="cat__titulo">Categorías de productos</h1>
+    <button
+      pButton
+      type="button"
+      label="Crear categoría"
+      icon="pi pi-plus"
+      class="cat__btn-crear"
+      (click)="abrirCrear()"
+    ></button>
+  </header>
 
-<div>
-  <input
-    type="text"
-    [(ngModel)]="nuevaCategoria.nombre"
-    placeholder="Nombre de categoría"
-  />
+  @if (errorCarga) {
+    <p class="cat__err" role="alert">{{ errorCarga }}</p>
+  }
 
-  <button (click)="guardarCategoria()">
-    {{ editando ? 'Actualizar' : 'Guardar' }}
-  </button>
+  <section class="cat__familias-card" aria-labelledby="cat-fam-h">
+    <h2 id="cat-fam-h" class="cat__familias-titulo">Familias del catálogo</h2>
+    <p class="cat__familias-txt">
+      Categorías de referencia del catálogo Little Trees. En la tabla de abajo verá
+      <strong>todas</strong> las categorías guardadas en la base de datos (estas y las que cree usted).
+    </p>
+    <ul class="cat__familias-chips">
+      @for (f of familiasCatalogoLt; track f) {
+        <li class="cat__familia-chip">{{ f }}</li>
+      }
+    </ul>
+  </section>
 
-  <button *ngIf="editando" (click)="resetFormulario()">
-    Cancelar
-  </button>
+  <div class="cat__toolbar">
+    <span class="p-input-icon-left cat__buscador">
+      <i class="pi pi-search" aria-hidden="true"></i>
+      <input
+        pInputText
+        type="search"
+        class="w-full"
+        placeholder="Buscar categorías"
+        [(ngModel)]="searchText"
+        name="buscarCat"
+        autocomplete="off"
+      />
+    </span>
+    <div class="cat__orden" role="group" aria-label="Ordenar">
+      <button
+        pButton
+        type="button"
+        [text]="true"
+        [rounded]="true"
+        icon="pi pi-arrows-v"
+        pTooltip="Alternar A–Z / Z–A"
+        (click)="toggleOrden()"
+        class="cat__ord-toggle"
+      ></button>
+      <button
+        pButton
+        type="button"
+        [text]="true"
+        [rounded]="true"
+        icon="pi pi-sort-alpha-up"
+        pTooltip="A–Z"
+        (click)="setOrden('az')"
+        [class.is-active]="orden === 'az'"
+      ></button>
+      <button
+        pButton
+        type="button"
+        [text]="true"
+        [rounded]="true"
+        icon="pi pi-sort-alpha-up-alt"
+        pTooltip="Z–A"
+        (click)="setOrden('za')"
+        [class.is-active]="orden === 'za'"
+      ></button>
+    </div>
+  </div>
+
+  <p class="cat__cargando" [hidden]="!cargando">Cargando categorías…</p>
+
+  <div class="cat__tabla-wrap" [class.cat__tabla-wrap--dim]="cargando">
+  <p-table
+    [value]="filas"
+    [paginator]="true"
+    [rows]="10"
+    [rowsPerPageOptions]="[10, 20, 40]"
+    responsiveLayout="stack"
+    styleClass="p-datatable-sm cat__tabla"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} categorías"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th class="th-nombre">Nombre de categoría</th>
+        <th class="th-cant" style="width: 7rem; text-align: right">Cantidad</th>
+        <th class="th-acc" style="width: 6.5rem; text-align: center">Acciones</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-c>
+      <tr>
+        <td>
+          <span class="cell-nombre">
+            <i class="pi pi-sitemap" aria-hidden="true"></i>
+            {{ c.nombre }}
+          </span>
+        </td>
+        <td class="td-cant">
+          <span class="cell-cantidad">{{ c.cantidad | number: '1.0-0' }}</span>
+        </td>
+        <td class="td-acc">
+          <button
+            pButton
+            type="button"
+            icon="pi pi-pencil"
+            [rounded]="true"
+            [text]="true"
+            severity="secondary"
+            pTooltip="Editar"
+            (click)="abrirEditar(c)"
+          ></button>
+          <button
+            pButton
+            type="button"
+            icon="pi pi-trash"
+            [rounded]="true"
+            [text]="true"
+            severity="danger"
+            pTooltip="Eliminar"
+            (click)="eliminarCategoria(c)"
+          ></button>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="3" class="empty-table">
+          <i class="pi pi-inbox" aria-hidden="true"></i>
+          <span>
+            @if (searchText.trim()) {
+              No hay resultados. Prueba otra búsqueda.
+            } @else {
+              Aún no hay categorías. Pulsa <strong>Crear categoría</strong>.
+            }
+          </span>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+  </div>
+
+  <p-dialog
+    [header]="editando ? 'Editar categoría' : 'Crear categoría'"
+    [(visible)]="mostrarFormulario"
+    [modal]="true"
+    [dismissableMask]="true"
+    [draggable]="false"
+    [resizable]="false"
+    [style]="{ width: 'min(24rem, 95vw)' }"
+    styleClass="cat__dialog"
+    (onHide)="onDialogHide()"
+  >
+    <div class="cat__form">
+      <label for="cat-nombre">Nombre de categoría</label>
+      <input
+        pInputText
+        id="cat-nombre"
+        class="w-full"
+        [(ngModel)]="formNombre"
+        name="formNombre"
+        placeholder="Ej. DULCES &amp; FRUTALES"
+        (keydown.enter)="$event.preventDefault(); guardarCategoria()"
+      />
+    </div>
+    <ng-template pTemplate="footer">
+      <div class="cat__footer-btns">
+        <button
+          pButton
+          type="button"
+          label="Cancelar"
+          class="cat__btn-sec"
+          (click)="cerrarDialogo()"
+        ></button>
+        <button
+          pButton
+          type="button"
+          [label]="editando ? 'Guardar' : 'Guardar'"
+          icon="pi pi-check"
+          class="cat__btn-pri"
+          (click)="guardarCategoria()"
+          [disabled]="!formNombre.trim()"
+        ></button>
+      </div>
+    </ng-template>
+  </p-dialog>
 </div>
-
-<hr />
-
-<table border="1">
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Nombre</th>
-      <th>Acciones</th>
-    </tr>
-  </thead>
-
-  <tbody>
-    <tr *ngFor="let categoria of categorias">
-      <td>{{ categoria.id }}</td>
-      <td>{{ categoria.nombre }}</td>
-      <td>
-        <button (click)="editarCategoria(categoria)">
-          Editar
-        </button>
-
-        <button (click)="eliminarCategoria(categoria.id)">
-          Eliminar
-        </button>
-      </td>
-    </tr>
-  </tbody>
-</table>

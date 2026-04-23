@@ -1,0 +1,94 @@
+<div class="reporte">
+  <div class="reporte__head">
+    <h1 class="reporte__titulo">Informe de estado de existencias</h1>
+    <aside class="reporte__kpi" aria-label="Resumen de valor de inventario">
+      <p class="reporte__kpi-label">Existencias totales (valor)</p>
+      <p class="reporte__kpi-monto">
+        Bs. {{ moneda(existenciasTotalBs) }}
+      </p>
+      <p class="reporte__kpi-hint">Suma de precio × unidades en stock</p>
+    </aside>
+  </div>
+
+  @if (avisoReporte) {
+    <p class="reporte__aviso" role="status">{{ avisoReporte }}</p>
+  }
+  @if (errorMsg) {
+    <p class="reporte__err" role="alert">{{ errorMsg }}</p>
+  }
+
+  <p class="reporte__cargando" [hidden]="!cargando">Cargando informe…</p>
+
+  <div class="reporte__toolbar">
+    <div class="reporte__search-wrap">
+      <i class="pi pi-search reporte__search-ico" aria-hidden="true"></i>
+      <input
+        pInputText
+        type="search"
+        class="reporte__search-input w-full"
+        placeholder="Buscar producto, SKU o categoría"
+        [(ngModel)]="searchText"
+        name="buscaRep"
+        autocomplete="off"
+      />
+    </div>
+    <button
+      pButton
+      type="button"
+      class="reporte__btn-refresh"
+      icon="pi pi-refresh"
+      pTooltip="Actualizar datos"
+      (click)="cargar()"
+      [disabled]="cargando"
+    ></button>
+  </div>
+
+  <div class="reporte__table-card">
+    <p-table
+      [value]="filasVista"
+      [paginator]="true"
+      [rows]="12"
+      [rowsPerPageOptions]="[12, 24, 50]"
+      responsiveLayout="stack"
+      styleClass="p-datatable-sm reporte__tabla"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} filas"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Producto</th>
+          <th style="width: 7.5rem" class="th-sku">SKU</th>
+          <th class="th-cat">Categoría</th>
+          <th class="th-num" style="width: 5.5rem">Cantidad</th>
+          <th class="th-num" style="width: 8rem">Valor (Bs.)</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-f>
+        <tr>
+          <td>
+            <span class="cell-prod">
+              <i class="pi pi-box" aria-hidden="true"></i>
+              {{ f.nombre }}
+            </span>
+          </td>
+          <td class="td-mono">{{ f.sku }}</td>
+          <td>{{ f.categoria }}</td>
+          <td class="td-num">{{ int(f.cantidad) }}</td>
+          <td class="td-num">Bs. {{ moneda(f.valor) }}</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="5" class="reporte__empty">
+            <i class="pi pi-inbox" aria-hidden="true"></i>
+            @if (searchText.trim()) {
+              <span>Sin resultados. Pruebe otra búsqueda.</span>
+            } @else {
+              <span>No hay productos en el inventario.</span>
+            }
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>

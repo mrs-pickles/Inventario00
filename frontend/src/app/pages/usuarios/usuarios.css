@@ -1,0 +1,269 @@
+:host {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  color: var(--ref-text, #2c2b28);
+}
+
+.usuarios-page {
+  max-width: 56rem;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.usuarios-page__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem 1.5rem;
+  margin-bottom: 1.1rem;
+}
+
+.usuarios-page__titulo {
+  font-family: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  font-size: clamp(1.45rem, 3vw, 1.75rem);
+  font-weight: 600;
+  margin: 0 0 0.35rem;
+  line-height: 1.2;
+  color: var(--ref-text, #2c2b28);
+}
+
+.usuarios-page__sub {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: var(--ref-text-muted, #5f5c56);
+  max-width: 36rem;
+}
+
+.usuarios-page__btn-crear {
+  background: #4b4537 !important;
+  border: 1px solid #3a3529 !important;
+  color: #f5f2eb !important;
+  font-weight: 600;
+  border-radius: 6px !important;
+  padding: 0.55rem 1.2rem !important;
+}
+.usuarios-page__btn-crear:hover {
+  filter: brightness(1.06);
+  background: #5a5343 !important;
+}
+
+.usuarios-page__err {
+  color: #9a1c1c;
+  font-size: 0.9rem;
+  margin: 0 0 0.75rem;
+}
+.usuarios-page__cargando {
+  font-size: 0.9rem;
+  color: var(--ref-text-muted, #5c5348);
+  margin: 0 0 0.6rem;
+}
+
+.usuarios-page__card {
+  background: #3a322a;
+  border: 1px solid rgba(90, 70, 120, 0.22);
+  border-radius: 0.85rem;
+  padding: 1rem 1rem 0.25rem;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+}
+.usuarios-page__card.is-dimmed {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.usuarios-page__search-wrap {
+  position: relative;
+  margin-bottom: 0.9rem;
+}
+.usuarios-page__search-ico {
+  position: absolute;
+  left: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6a5f52;
+  z-index: 1;
+  pointer-events: none;
+  font-size: 0.95rem;
+}
+.usuarios-page__search-input {
+  width: 100%;
+  padding-left: 2.4rem !important;
+  min-height: 2.5rem;
+  background: #fffcf5 !important;
+  border: 1px solid #c4c0b8 !important;
+  border-radius: 0.65rem;
+  color: #2c2b28 !important;
+  font-size: 0.95rem;
+}
+.usuarios-page__search-input::placeholder {
+  color: #7a756c;
+}
+.usuarios-page__search-input:focus {
+  border-color: #8b7a66 !important;
+  box-shadow: 0 0 0 2px rgba(139, 122, 102, 0.2);
+}
+
+/* Tabla interior */
+:host ::ng-deep .usuarios-page__tabla.p-datatable {
+  --p-datatable-header-cell-background: #2f2822;
+  --p-datatable-header-cell-color: #f5f2eb;
+  --p-datatable-header-cell-border-color: #4a4036;
+  --p-datatable-body-cell-border-color: #3d352e;
+  --p-datatable-row-background: #3a322a;
+  --p-datatable-row-color: #f0ebe4;
+  --p-datatable-row-hover-background: #42392f;
+}
+:host ::ng-deep .usuarios-page__tabla .p-datatable-thead > tr > th {
+  font-size: 0.7rem;
+  text-transform: none;
+  letter-spacing: 0.02em;
+  font-weight: 600;
+  border-bottom: 1px solid #4a4036;
+  padding: 0.75rem 0.75rem;
+}
+:host ::ng-deep .usuarios-page__tabla .p-datatable-tbody > tr > td {
+  padding: 0.7rem 0.75rem;
+  font-size: 0.9rem;
+  vertical-align: middle;
+  border-color: #3d352e;
+}
+:host ::ng-deep .usuarios-page__tabla .p-datatable-tbody > tr:nth-child(even) {
+  background: #332c27;
+}
+:host ::ng-deep .usuarios-page__tabla .p-paginator {
+  background: #2f2822;
+  color: #e8e0d8;
+  border-color: #4a4036;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.85rem;
+}
+:host ::ng-deep .usuarios-page__tabla .p-paginator .p-paginator-page.p-highlight {
+  background: #5c5348;
+  color: #fff;
+}
+
+/* Toggle “encendido” con acento rosado suave (mock) */
+:host
+  ::ng-deep
+  .usuarios-page__tabla
+  p-toggleswitch.p-toggleswitch-checked
+  .p-toggleswitch-slider {
+  background: #c77b9b !important;
+}
+:host
+  ::ng-deep
+  .usuarios-page__tabla
+  p-toggleswitch:not(.p-toggleswitch-checked)
+  .p-toggleswitch-slider {
+  background: #5a5348 !important;
+}
+
+.cell-identidad {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+.cell-identidad__avatar {
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #2a3b28;
+  background: linear-gradient(160deg, #c8e0c2 0%, #a8cf9e 100%);
+  border: 2px solid rgba(255, 255, 255, 0.35);
+}
+.cell-identidad__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+.cell-identidad__nombre {
+  font-weight: 600;
+  color: #f5f2eb;
+  line-height: 1.2;
+  word-break: break-word;
+}
+.cell-identidad__email {
+  font-size: 0.78rem;
+  color: #b8b0a4;
+  word-break: break-all;
+}
+
+.td-rol {
+  color: #e4ddd4;
+}
+.td-centro {
+  text-align: center;
+}
+.td-acc {
+  text-align: center;
+  white-space: nowrap;
+}
+
+:host ::ng-deep .usuarios-page__acc-btn .p-button {
+  color: #d4ccc2 !important;
+}
+:host ::ng-deep .usuarios-page__acc-btn:hover .p-button {
+  color: #fff !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+:host ::ng-deep .usuarios-page__acc-btn--del:hover .p-button {
+  color: #f0a8a8 !important;
+}
+
+.usuarios-page__empty {
+  text-align: center;
+  padding: 2rem 1rem !important;
+  color: #a89b8c;
+  font-size: 0.95rem;
+}
+.usuarios-page__empty .pi {
+  display: block;
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  opacity: 0.65;
+}
+
+:host ::ng-deep .usuarios-page__dialog .p-dialog-content {
+  padding-top: 0.35rem;
+}
+.usuarios-page__form .field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 0.9rem;
+}
+.usuarios-page__form .field label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ref-text-muted, #5c5348);
+}
+.usuarios-page__form .field--switch {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+:host ::ng-deep .usuarios-page__btn-guardar {
+  background: #4b4537 !important;
+  border-color: #3a3529 !important;
+  color: #f5f2eb !important;
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .th-rol,
+  .th-estado,
+  .th-acc {
+    font-size: 0.65rem;
+  }
+}

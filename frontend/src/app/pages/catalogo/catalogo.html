@@ -1,0 +1,59 @@
+<div class="catalogo">
+  <div class="catalogo__card catalogo__card--hero">
+    <h1 class="catalogo__title">{{ tituloMarca }}</h1>
+    <p class="catalogo__lead">{{ leadMarca }}</p>
+  </div>
+
+  <section
+    class="catalogo__card catalogo__card--categorias"
+    aria-labelledby="catalogo-categorias-titulo"
+  >
+    <h2 id="catalogo-categorias-titulo" class="catalogo__categorias-titulo">
+      Categorías
+    </h2>
+    <p class="catalogo__categorias-sub">
+      Familias de aroma en este catálogo. El número indica cuántos productos hay en inventario por familia.
+    </p>
+    <ul class="catalogo__categorias-chips">
+      @for (nombre of familiasCatalogo; track nombre) {
+        <li
+          class="catalogo__categoria-chip"
+          [attr.aria-label]="
+            nombre + ': ' + cantidadEnFamilia(nombre) + ' producto(s)'
+          "
+        >
+          <span class="catalogo__categoria-nombre">{{ nombre }}</span>
+          <span class="catalogo__categoria-badge">{{ cantidadEnFamilia(nombre) }}</span>
+        </li>
+      }
+    </ul>
+  </section>
+
+  @if (errorMsg) {
+    <p class="catalogo__err" role="alert">{{ errorMsg }}</p>
+  }
+
+  <p class="catalogo__cargando" [hidden]="!cargando">Cargando catálogo…</p>
+
+  <div [class.is-dimmed]="cargando" class="catalogo__secciones">
+    @for (g of grupos; track g.nombre) {
+      <section class="catalogo__grupo" [attr.aria-labelledby]="'cat-h-' + $index">
+        <h2 class="catalogo__grupo-titulo" [id]="'cat-h-' + $index">{{ g.nombre }}</h2>
+        <ul class="catalogo__lista">
+          @for (p of g.productos; track p.id) {
+            <li class="catalogo__item">
+              <span class="catalogo__aroma">{{ p.nombre }}</span>
+              <span class="catalogo__precio" aria-label="Precio de referencia"
+                >Bs. {{ p.precio | number: "1.2-2" }}</span
+              >
+            </li>
+          }
+        </ul>
+      </section>
+    } @empty {
+      @if (!cargando && !errorMsg) {
+        <p class="catalogo__vacio">No hay productos en el catálogo. Verifique el inventario.</p>
+      }
+    }
+  </div>
+</div>

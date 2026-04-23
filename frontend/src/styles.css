@@ -1,31 +1,57 @@
-/* Estilo global: fondo degradado verde muy suave */
+/* Paleta alineada al diseño de referencia (lateral oliva, crema, panel salvia) */
 @import "primeicons/primeicons.css";
 @import "primeflex/primeflex.css";
 
 :root {
-  --inv-page-bg: linear-gradient(
-    145deg,
-    #f4fdf7 0%,
-    #f0fdf4 35%,
-    #ecfdf5 70%,
-    #f7fee7 100%
-  );
-  --inv-text: #14532d;
-  --inv-text-muted: #3f6212;
-  --inv-border-soft: rgba(34, 197, 94, 0.18);
+  /* Mockup: barra lateral */
+  --ref-sidebar: #444137;
+  /* Mockup: botones del menú y cabecera */
+  --ref-beige: #f2ede4;
+  --ref-beige-dark: #e6e0d6;
+  /* Mockup: panel de trabajo (gris-verde; versión clara) */
+  --ref-panel: #d2d6cc;
+  --ref-panel-deep: #c4c8c0;
+  /* Texto */
+  --ref-text: #2c2b28;
+  --ref-text-muted: #5f5c56;
+  --ref-border: rgba(0, 0, 0, 0.08);
+  /* Compatibilidad con el resto del app */
+  --inv-surface: var(--ref-beige);
+  --inv-surface-2: var(--ref-panel);
+  --inv-card: #fffcf8;
+  --inv-ink: var(--ref-text);
+  --inv-ink-muted: var(--ref-text-muted);
+  --inv-border: #dad6cf;
+  --inv-text: var(--ref-text);
+  --inv-text-muted: var(--ref-text-muted);
+  --inv-border-soft: var(--ref-border);
+}
+
+html {
+  min-height: 100%;
+  height: 100%;
 }
 
 body {
+  min-height: 100%;
   margin: 0;
   font-family:
+    "Source Sans 3",
     system-ui,
     -apple-system,
     "Segoe UI",
     Roboto,
     Arial,
     sans-serif;
-  color: var(--inv-text);
-  background: var(--inv-page-bg);
-  background-attachment: fixed;
+  color: var(--ref-text);
+  background: var(--ref-panel);
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+app-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  min-height: 100dvh;
 }
