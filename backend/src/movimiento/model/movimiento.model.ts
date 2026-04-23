@@ -13,6 +13,15 @@ export class Movimiento {
   @Column()
   cantidad!: number;
 
+  /** Precio unitario pagado al proveedor (solo compras / entradas con valor). */
+  @Column('decimal', {
+    name: 'precio_compra',
+    nullable: true,
+    precision: 14,
+    scale: 4,
+  })
+  precioCompra!: number | null;
+
   @Column({
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP'

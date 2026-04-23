@@ -6,6 +6,8 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "db:seed": "node ./scripts/run-sql.cjs sql/seed_little_trees.sql",
+    "db:seed:mov": "node ./scripts/run-sql.cjs sql/seed_movimientos_feb_abr.sql",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",

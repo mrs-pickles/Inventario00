@@ -24,6 +24,11 @@ export class CategoriaController {
     return this.service.getAll();
   }
 
+  @Get('listado')
+  listadoConConteo() {
+    return this.service.findAllConConteo();
+  }
+
   @Get(':id')
   getById(@Param('id', ParseIntPipe) id: number) {
     return this.service.getById(id);

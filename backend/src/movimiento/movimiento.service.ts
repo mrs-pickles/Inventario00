@@ -49,8 +49,8 @@ export class MovimientoService {
     throw new Error('Usuario no encontrado');
   }
 
-        // ACTUALIZAR STOCK
-  if (data.tipo === 'ENTRADA') {
+        // ACTUALIZAR STOCK (COMPRA = entrada de mercadería al proveedor)
+  if (data.tipo === 'ENTRADA' || data.tipo === 'COMPRA') {
     producto.stock += data.cantidad;
   }
 
@@ -65,9 +65,15 @@ export class MovimientoService {
 
   await this.productoRepository.save(producto);
 
+    const precioCompra =
+      data.precioCompra != null && !Number.isNaN(Number(data.precioCompra))
+        ? Math.round(Number(data.precioCompra) * 10000) / 10000
+        : null;
+
     const entity = this.repository.create({
       tipo: data.tipo,
       cantidad: data.cantidad,
+      precioCompra,
       producto,
       usuario
     });
@@ -95,5 +101,91 @@ export class MovimientoService {
       where: { id },
       relations: ['producto', 'usuario']
     });
+  }
+
+  private async sumaCantidadPorMes(
+    year: number,
+    tipo: 'ENTRADA' | 'SALIDA',
+  ): Promise<number[]> {
+    const raw = await this.repository
+      .createQueryBuilder('m')
+      .select('EXTRACT(MONTH FROM m.fecha)', 'mes')
+      .addSelect('COALESCE(SUM(m.cantidad), 0)', 'total')
+      .where('m.tipo = :t', { t: tipo })
+      .andWhere('EXTRACT(YEAR FROM m.fecha) = :y', { y: year })
+      .groupBy('EXTRACT(MONTH FROM m.fecha)')
+      .orderBy('EXTRACT(MONTH FROM m.fecha)', 'ASC')
+      .getRawMany();
+
+    const porMes = Array.from({ length: 12 }, () => 0);
+    for (const row of raw) {
+      const idx = Math.floor(Number(row.mes)) - 1;
+      if (idx >= 0 && idx < 12) {
+        porMes[idx] = Number(row.total) || 0;
+      }
+    }
+    return porMes;
+  }
+
+  /** Unidades vendidas (SALIDA) por mes en un año, 1–12. */
+  async getVentasPorMes(year: number) {
+    const porMes = await this.sumaCantidadPorMes(year, 'SALIDA');
+    return {
+      year,
+      porMes: porMes.map((cantidad, i) => ({ mes: i + 1, cantidad })),
+    };
+  }
+
+  /** Unidades de ENTRADA y SALIDA por mes (gráfico comparativo). */
+  async getEntradasSalidasPorMes(year: number) {
+    const entradas = await this.sumaCantidadPorMes(year, 'ENTRADA');
+    const salidas = await this.sumaCantidadPorMes(year, 'SALIDA');
+    return { year, entradas, salidas };
+  }
+
+  /**
+   * Monto aproximado de ventas (SALIDA) por mes: suma de cantidad × precio actual del producto.
+   */
+  async getGananciasPorMes(year: number) {
+    const raw = await this.repository
+      .createQueryBuilder('m')
+      .innerJoin('m.producto', 'p')
+      .select('EXTRACT(MONTH FROM m.fecha)', 'mes')
+      .addSelect('COALESCE(SUM(m.cantidad * p.precio), 0)', 'total')
+      .where('m.tipo = :t', { t: 'SALIDA' })
+      .andWhere('EXTRACT(YEAR FROM m.fecha) = :y', { y: year })
+      .groupBy('EXTRACT(MONTH FROM m.fecha)')
+      .orderBy('EXTRACT(MONTH FROM m.fecha)', 'ASC')
+      .getRawMany();
+
+    const porMes = Array.from({ length: 12 }, () => 0);
+    for (const row of raw) {
+      const idx = Math.floor(Number(row.mes)) - 1;
+      if (idx >= 0 && idx < 12) {
+        porMes[idx] = Number(row.total) || 0;
+      }
+    }
+    return { year, porMes: porMes.map((monto, i) => ({ mes: i + 1, monto })) };
+  }
+
+  /** Productos con más unidades vendidas (SALIDA) en el año. */
+  async getTopProductosVendidos(year: number, limit: number) {
+    const raw = await this.repository
+      .createQueryBuilder('m')
+      .innerJoin('m.producto', 'p')
+      .select('p.nombre', 'nombre')
+      .addSelect('COALESCE(SUM(m.cantidad), 0)', 'total')
+      .where('m.tipo = :t', { t: 'SALIDA' })
+      .andWhere('EXTRACT(YEAR FROM m.fecha) = :y', { y: year })
+      .groupBy('p.id')
+      .addGroupBy('p.nombre')
+      .orderBy('SUM(m.cantidad)', 'DESC')
+      .limit(Math.min(Math.max(1, limit), 20))
+      .getRawMany();
+
+    return raw.map((r) => ({
+      nombre: r.nombre,
+      cantidad: Number(r.total) || 0,
+    }));
   }
 }

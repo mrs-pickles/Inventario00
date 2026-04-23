@@ -5,8 +5,12 @@ import { UsuarioController } from './usuario/usuario.controller';
 import ormConfig from './config/orm.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Usuario } from './usuario/model/usuario.model';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { UsuarioService } from './usuario/usuario.service';
+import { UsuarioSeedService } from './usuario/usuario.seed.service';
+import { LittleTreesSeedService } from './seed/little-trees.seed.service';
+import { DemoAdulteradosSeedService } from './seed/demo-adulterados.seed.service';
 import { Producto } from './producto/model/producto.model';
 import { Categoria } from './categoria/model/categoria.model';
 import { ProductoController } from './producto/producto.controller';
@@ -28,7 +32,15 @@ import { MovimientoService} from './movimiento/movimiento.service';
       expandVariables: true,
     }),
     TypeOrmModule.forRootAsync({
-      useFactory: ormConfig
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => {
+        const opts = config.get<TypeOrmModuleOptions>('orm.config');
+        if (!opts) {
+          throw new Error('orm.config no está definido');
+        }
+        return opts;
+      },
     }),
     TypeOrmModule.forFeature([Usuario, Categoria, Producto, Movimiento]),
     AuthModule
@@ -43,6 +55,9 @@ import { MovimientoService} from './movimiento/movimiento.service';
   providers: [
     // AppService
     UsuarioService,
+    UsuarioSeedService,
+    LittleTreesSeedService,
+    DemoAdulteradosSeedService,
     ProductoService,
     CategoriaService,
     MovimientoService

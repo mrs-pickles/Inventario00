@@ -1,18 +1,24 @@
 -- =============================================================================
--- Semilla: Little Trees (aromatizantes / ambientadores para auto) — marca pino
--- Categorías por familia de olores. Precio en unidades genéricas; ajustar moneda.
--- Uso: psql -h 127.0.0.1 -p 5223 -U inventario -d inventario-db -f seed_little_trees.sql
--- O desde pgAdmin: ejecutar este archivo.
+-- LITTLE TREES – AROMATIZANTES ORIGINALS (catálogo demo)
+--
+-- TÍTULO / DESCRIPCIÓN (para ficha o catálogo)
+--   Refresca tu auto con estilo y personalidad. Los Little Trees llenan tu
+--   vehículo de aromas intensos y duraderos. Diseños icónicos, fragancias
+--   marcadas y ese toque distinto en cada viaje. Elige tu aroma favorito.
+--
+-- CATEGORÍAS: Dulces y frutales; Florales y suaves; Frescos y naturales;
+--   Intensos y especiales; Diseños y ediciones especiales.
+-- Precio/stock son de ejemplo: ajustar a tu moneda.
+--
+-- Cargar en la base (PostgreSQL levantada en 127.0.0.1:5223):
+--   Desde la carpeta backend:  npm run db:seed
+-- O: psql -h 127.0.0.1 -p 5223 -U inventario -d inventario-db -f sql/seed_little_trees.sql
+-- Luego, para probar el dashboard (movimientos):  npm run db:seed:mov
 -- =============================================================================
-/*
-  TÍTULO: Little Trees – aromatizantes originales
-  Refresca tu auto con estilo. Fragancias intensas y diseños icónicos.
-  Categorías: dulces/frutales, florales, frescos, intensos, ediciones especiales.
-*/
 
 BEGIN;
 
--- Categorías (olores agrupados)
+-- Categorías
 INSERT INTO categoria (nombre) VALUES
   ('Dulces y frutales'),
   ('Florales y suaves'),
@@ -21,7 +27,7 @@ INSERT INTO categoria (nombre) VALUES
   ('Diseños y ediciones especiales')
 ON CONFLICT (nombre) DO NOTHING;
 
--- Productos: Dulces y frutales
+-- Dulces y frutales
 INSERT INTO producto (nombre, precio, stock, categoria_id) SELECT v.nombre, v.precio, v.stock, c.categoria_id
 FROM categoria c,
 (VALUES
@@ -75,7 +81,7 @@ WHERE c.nombre = 'Frescos y naturales'
 INSERT INTO producto (nombre, precio, stock, categoria_id) SELECT v.nombre, v.precio, v.stock, c.categoria_id
 FROM categoria c,
 (VALUES
-  ('Ice Black', 3.60, 55),
+  ('Black Ice', 3.60, 55),
   ('Be King', 3.65, 50),
   ('Gold', 3.70, 40),
   ('No Smoke', 3.50, 62),
@@ -107,5 +113,4 @@ WHERE c.nombre = 'Diseños y ediciones especiales'
 
 COMMIT;
 
--- Verificación (opcional):
--- SELECT cat.nombre AS categoria, COUNT(*) AS productos FROM producto p JOIN categoria cat ON p.categoria_id = cat.categoria_id GROUP BY cat.categoria_id, cat.nombre ORDER BY cat.nombre;
+-- Verificación: SELECT c.nombre, COUNT(*) FROM producto p JOIN categoria c ON p.categoria_id = c.categoria_id GROUP BY c.categoria_id, c.nombre;

@@ -17,6 +17,28 @@ export class CategoriaService {
     return await this.repository.find();
   }
 
+  /** Listado con cantidad de productos por categoría (panel Categorías). */
+  async findAllConConteo(): Promise<
+    { id: number; nombre: string; cantidad: number }[]
+  > {
+    const raw = await this.repository
+      .createQueryBuilder('c')
+      .select('c.categoria_id', 'id')
+      .addSelect('c.nombre', 'nombre')
+      .addSelect('COUNT(p.producto_id)', 'cantidad')
+      .leftJoin('c.productos', 'p')
+      .groupBy('c.categoria_id')
+      .addGroupBy('c.nombre')
+      .orderBy('c.nombre', 'ASC')
+      .getRawMany();
+
+    return raw.map((r) => ({
+      id: Number(r.id),
+      nombre: r.nombre,
+      cantidad: Number(r.cantidad) || 0,
+    }));
+  }
+
   async getById(id: number) {
     return await this.repository.findOne({ where: { id } });
   }

@@ -16,6 +16,12 @@ export class Usuario {
     @Column()
     password!: string;
 
+    @Column({ default: 'Administrador' })
+    rol!: string;
+
+    @Column({ name: 'activo', default: true })
+    activo!: boolean;
+
     @OneToMany(() => Movimiento,movimiento => movimiento.usuario)
     movimientos!: Movimiento[];
 }

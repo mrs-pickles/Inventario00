@@ -16,6 +16,22 @@ export class ProductoController {
 
   constructor(private readonly productoService: ProductoService) {}
 
+  // 🔹 Estadísticas: productos por categoría (ruta fija antes de :id)
+  @Get('estadisticas/por-categoria')
+  getConteoPorCategoria() {
+    return this.productoService.getConteoPorCategoria();
+  }
+
+  @Get('estadisticas/resumen')
+  getResumenInventario() {
+    return this.productoService.getResumenInventario();
+  }
+
+  @Get('reporte/existencias')
+  getInformeExistencias() {
+    return this.productoService.getInformeExistencias();
+  }
+
   // 🔹 LISTAR
   @Get()
   getAll() {

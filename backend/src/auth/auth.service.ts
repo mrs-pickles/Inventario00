@@ -30,6 +30,10 @@ export class AuthService {
             throw new UnauthorizedException('Contraseña incorrecta');
         }
 
+        if (usuario.activo === false) {
+            throw new UnauthorizedException('Cuenta deshabilitada');
+        }
+
         const payload = {
             sub: usuario.id,
             email: usuario.email,

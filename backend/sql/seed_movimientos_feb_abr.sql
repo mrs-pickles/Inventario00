@@ -1,7 +1,8 @@
 -- =============================================================================
--- Datos de prueba: movimientos (ENTRADA / SALIDA) de febrero a abril → hasta hoy
--- Requisitos: seed_little_trees.sql y al menos 1 fila en usuario.
+-- Datos de prueba: movimientos (ENTRADA / SALIDA) de febrero a abril → hoy
+-- Requisitos:  npm run db:seed  (categorías + productos) y al menos 1 usuario.
 -- No recalcula stock en producto (solo historial para reportes y dashboard).
+-- Ejecución:  npm run db:seed:mov
 -- =============================================================================
 
 BEGIN;
@@ -61,6 +62,76 @@ BEGIN
   ) reps ON true;
 
   RAISE NOTICE 'Movimientos demo insertados: % a % (usuario_id=%).', d0, d1, uid;
+END $$;
+
+-- Ranking demo: reforzar SALIDAS hacia nombres muy reconocidos (cada fila = una venta).
+DO $$
+DECLARE
+  uid int;
+  y int;
+  d0 date;
+  d1 date;
+  p_id int;
+  rest int;
+  chunk int;
+  day_d date;
+  rec record;
+BEGIN
+  y := EXTRACT(YEAR FROM CURRENT_DATE)::int;
+  d0 := make_date(y, 2, 1);
+  IF CURRENT_DATE < d0 THEN
+    y := y - 1;
+    d0 := make_date(y, 2, 1);
+  END IF;
+  d1 := LEAST(CURRENT_DATE, make_date(y, 4, 30));
+  IF d0 > d1 THEN
+    RAISE NOTICE 'Reforzar ranking: sin rango feb-abr.';
+    RETURN;
+  END IF;
+
+  SELECT usuario_id INTO uid FROM usuario ORDER BY usuario_id LIMIT 1;
+  IF uid IS NULL THEN
+    RETURN;
+  END IF;
+
+  UPDATE producto SET nombre = 'Black Ice' WHERE nombre = 'Ice Black';
+
+  FOR rec IN
+    SELECT * FROM (VALUES
+      ('Bandera Americana'::text, 920::int),
+      ('New Car', 780),
+      ('Black Ice', 720),
+      ('Gold', 200),
+      ('Royal Pine', 180),
+      ('Leather', 150),
+      ('Calavera Negra Tatuaje', 110),
+      ('Coco Playa / Coco Naranja', 95)
+    ) AS t(nombre, meta)
+  LOOP
+    SELECT producto_id INTO p_id FROM producto WHERE nombre = rec.nombre;
+    IF p_id IS NULL THEN
+      CONTINUE;
+    END IF;
+    rest := rec.meta;
+    WHILE rest > 0 LOOP
+      chunk := LEAST(
+        12 + (random() * 48)::int,
+        GREATEST(1, rest)
+      );
+      day_d := d0 + floor(random() * (d1 - d0 + 1))::int;
+      INSERT INTO movimiento (tipo, cantidad, fecha, producto_id, usuario_id)
+      VALUES (
+        'SALIDA',
+        chunk,
+        day_d::timestamp
+          + (random() * interval '11 hours 59 minutes')
+          + (random() * interval '30 minutes'),
+        p_id,
+        uid
+      );
+      rest := rest - chunk;
+    END LOOP;
+  END LOOP;
 END $$;
 
 COMMIT;
