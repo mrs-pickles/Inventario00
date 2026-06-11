@@ -1,0 +1,297 @@
+<div class="ventas">
+  <p-toast></p-toast>
+  <header class="ventas__barra">
+    <h1 class="ventas__titulo">
+      Ventas
+      @if (ventas.length > 0) {
+        <span class="ventas__contador">({{ ventas.length }} registradas)</span>
+      }
+    </h1>
+    <button
+      pButton
+      type="button"
+      label="Nueva venta"
+      icon="pi pi-plus"
+      class="ventas__btn-crear"
+      (click)="abrirNuevaVenta()"
+    ></button>
+  </header>
+
+  @if (errorMsg) {
+    <p class="ventas__alert ventas__alert--error" role="alert">{{ errorMsg }}</p>
+  }
+
+  @if (cargando) {
+    <p class="ventas__alert ventas__alert--info">Cargando ventas…</p>
+  }
+
+  <div class="ventas__toolbar">
+    <span class="p-input-icon-left ventas__buscador">
+      <i class="pi pi-search" aria-hidden="true"></i>
+      <input
+        pInputText
+        type="search"
+        placeholder="Buscar por número, cliente o total"
+        [(ngModel)]="searchText"
+        (ngModelChange)="onBusquedaCambiada()"
+        name="buscarVenta"
+        autocomplete="off"
+      />
+    </span>
+  </div>
+
+  <div class="ventas__tabla-wrap">
+    <div class="ventas__paginador">
+      <span class="ventas__paginador-info">{{ paginaReporte }}</span>
+      <label>
+        <select
+          class="ventas__select-rows"
+          [(ngModel)]="filasPorPagina"
+          (ngModelChange)="onFilasPorPaginaChange($event)"
+        >
+          @for (n of [10, 25, 50]; track n) {
+            <option [ngValue]="n">{{ n }}</option>
+          }
+        </select>
+      </label>
+      <button
+        pButton
+        type="button"
+        icon="pi pi-angle-left"
+        [text]="true"
+        [disabled]="pagina <= 0"
+        (click)="paginaAnterior()"
+      ></button>
+      <button
+        pButton
+        type="button"
+        icon="pi pi-angle-right"
+        [text]="true"
+        [disabled]="pagina >= totalPaginas - 1"
+        (click)="paginaSiguiente()"
+      ></button>
+    </div>
+
+    <div class="ventas__tabla-scroll">
+      <table class="ventas__tabla-html">
+        <thead>
+          <tr>
+            <th>N° Venta</th>
+            <th>Fecha</th>
+            <th>Cliente</th>
+            <th>Total</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (v of ventasPagina; track v.id) {
+            <tr>
+              <td class="cell-numero">{{ v.numero }}</td>
+              <td>{{ fechaFormato(v.fecha) }}</td>
+              <td>{{ v.cliente?.nombre || '—' }}</td>
+              <td class="td-numero">Bs. {{ moneda(v.total) }}</td>
+              <td class="td-centrado">
+                <p-tag [value]="v.estado" [severity]="getEstadoBadge(v.estado)" [rounded]="true" />
+              </td>
+              <td class="td-acciones">
+                <button
+                  pButton
+                  type="button"
+                  icon="pi pi-ban"
+                  [rounded]="true"
+                  [text]="true"
+                  severity="danger"
+                  pTooltip="Anular"
+                  [disabled]="v.estado === 'anulado'"
+                  (click)="anularVenta(v.id)"
+                ></button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="empty-table">
+                <i class="pi pi-inbox" aria-hidden="true"></i>
+                <span>
+                  @if (searchText.trim()) {
+                    No hay resultados. Prueba otra búsqueda.
+                  } @else {
+                    No hay ventas registradas. Crea la primera.
+                  }
+                </span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Diálogo para nueva venta -->
+  <p-dialog
+    header="Nueva venta"
+    [(visible)]="mostrarFormulario"
+    [modal]="true"
+    [dismissableMask]="true"
+    [style]="{ width: 'min(52rem, 95vw)' }"
+    (onHide)="cerrarFormulario()"
+  >
+    <div class="venta__form">
+      <!-- Seleccionar cliente -->
+      <div class="field">
+        <label for="venta-cliente">Cliente *</label>
+        <p-select
+          id="venta-cliente"
+          [options]="clientes"
+          optionLabel="nombre"
+          optionValue="id"
+          [(ngModel)]="nuevaVenta.clienteId"
+          placeholder="Seleccionar cliente"
+          [style]="{ width: '100%' }"
+        />
+      </div>
+
+      <!-- Agregar productos -->
+      <div class="venta__productos-agregar">
+        <div class="venta__producto-select">
+          <label for="venta-producto">Agregar producto</label>
+          <p-select
+            id="venta-producto"
+            [options]="productos"
+            optionLabel="nombre"
+            optionValue="id"
+            [(ngModel)]="productoSeleccionado"
+            placeholder="Buscar producto"
+            [style]="{ width: '100%' }"
+          />
+        </div>
+        <div class="venta__producto-cantidad">
+          <label for="venta-cantidad">Cantidad</label>
+          <p-inputNumber
+            id="venta-cantidad"
+            [(ngModel)]="cantidadSeleccionada"
+            [min]="1"
+            [showButtons]="true"
+            [style]="{ width: '100%' }"
+          />
+        </div>
+        <div class="venta__producto-precio">
+          <label for="venta-precio">Precio</label>
+          <p-inputNumber
+            id="venta-precio"
+            [(ngModel)]="precioVenta"
+            [min]="0"
+            [mode]="'decimal'"
+            [showButtons]="true"
+            [style]="{ width: '100%' }"
+            placeholder="0.00"
+          />
+        </div>
+        <div class="venta__producto-btn">
+          <button
+            pButton
+            type="button"
+            label="Agregar"
+            icon="pi pi-plus"
+            class="venta__btn-agregar"
+            (click)="agregarProducto()"
+            [disabled]="!productoSeleccionado"
+          ></button>
+        </div>
+      </div>
+
+      <!-- Tabla de productos agregados -->
+      @if (nuevaVenta.detalles.length > 0) {
+        <div class="venta__detalles">
+          <table class="venta__detalles-tabla">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th class="td-numero">Cantidad</th>
+                <th class="td-numero">Precio</th>
+                <th class="td-numero">Subtotal</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (d of nuevaVenta.detalles; track $index) {
+                <tr>
+                  <td>{{ d.productoNombre }}</td>
+                  <td class="td-numero">{{ d.cantidad }}</td>
+                  <td class="td-numero">Bs. {{ moneda(d.precioUnitario) }}</td>
+                  <td class="td-numero">Bs. {{ moneda(d.subtotal) }}</td>
+                  <td class="td-centrado">
+                    <button
+                      pButton
+                      type="button"
+                      icon="pi pi-trash"
+                      [rounded]="true"
+                      [text]="true"
+                      severity="danger"
+                      (click)="quitarProducto($index)"
+                    ></button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
+      <!-- Resumen -->
+      <div class="venta__resumen">
+        <div class="venta__resumen-linea">
+          <span>Subtotal:</span>
+          <span class="td-numero">Bs. {{ moneda(subtotal) }}</span>
+        </div>
+        <div class="venta__resumen-linea">
+          <label for="venta-descuento">Descuento:</label>
+          <p-inputNumber
+            id="venta-descuento"
+            [(ngModel)]="nuevaVenta.descuento"
+            [min]="0"
+            [max]="subtotal"
+            [style]="{ width: '120px' }"
+          />
+        </div>
+        <div class="venta__resumen-linea venta__total">
+          <span>Total:</span>
+          <span class="td-numero">Bs. {{ moneda(total) }}</span>
+        </div>
+      </div>
+
+      <!-- Observación -->
+      <div class="field">
+        <label for="venta-obs">Observación</label>
+        <textarea
+          id="venta-obs"
+          class="venta__textarea"
+          rows="2"
+          [(ngModel)]="nuevaVenta.observacion"
+          placeholder="Notas adicionales"
+        ></textarea>
+      </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <div class="venta__footer-actions">
+        <button
+          pButton
+          type="button"
+          label="Cancelar"
+          class="venta__btn-sec"
+          (click)="cerrarFormulario()"
+        ></button>
+        <button
+          pButton
+          type="button"
+          label="Confirmar venta"
+          icon="pi pi-check"
+          class="venta__btn-prim"
+          (click)="guardarVenta()"
+          [disabled]="!nuevaVenta.clienteId || nuevaVenta.detalles.length === 0"
+        ></button>
+      </div>
+    </ng-template>
+  </p-dialog>
+</div>

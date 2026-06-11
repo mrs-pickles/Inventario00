@@ -48,69 +48,69 @@ const vacioResumen: ResumenKpi = {
 };
 
 /** Conjunto de cifras demo alineadas entre KPI, dona, series y top (catálogo 5 familias = 44 ítems). */
-const USAR_DEMO_DASHBOARD = true;
+// const USAR_DEMO_DASHBOARD = true;
 
-const DEMO_CATEGORIAS: { categoria: string; total: number }[] = [
-  { categoria: 'DULCES & FRUTALES', total: 12 },
-  { categoria: 'FLORALES & SUAVES', total: 5 },
-  { categoria: 'FRESCOS & NATURALES', total: 9 },
-  { categoria: 'INTENSOS & ESPECIALES', total: 13 },
-  { categoria: 'DISEÑOS & EDICIONES ESPECIALES', total: 5 },
-];
+// const DEMO_CATEGORIAS: { categoria: string; total: number }[] = [
+//   { categoria: 'DULCES & FRUTALES', total: 12 },
+//   { categoria: 'FLORALES & SUAVES', total: 5 },
+//   { categoria: 'FRESCOS & NATURALES', total: 9 },
+//   { categoria: 'INTENSOS & ESPECIALES', total: 13 },
+//   { categoria: 'DISEÑOS & EDICIONES ESPECIALES', total: 5 },
+// ];
 
-function demoResumenKpi(anio: number): ResumenKpi {
-  const total = DEMO_CATEGORIAS.reduce((s, c) => s + c.total, 0);
-  const m = 1 + (anio - 2025) * 0.02;
-  return {
-    totalProductos: total,
-    productosAgotados: Math.max(0, Math.round(4 * m)),
-    devoluciones: 2,
-    pedidosEnCamino: 3,
-    valorInventarioBs: Math.round(98_750 * m),
-  };
-}
+// function demoResumenKpi(anio: number): ResumenKpi {
+//   const total = DEMO_CATEGORIAS.reduce((s, c) => s + c.total, 0);
+//   const m = 1 + (anio - 2025) * 0.02;
+//   return {
+//     totalProductos: total,
+//     productosAgotados: Math.max(0, Math.round(4 * m)),
+//     devoluciones: 2,
+//     pedidosEnCamino: 3,
+//     valorInventarioBs: Math.round(98_750 * m),
+//   };
+// }
 
-function demoEntradasSalidas(y: number): EntradasSalidasResp {
-  const m = 1 + (y - 2025) * 0.03;
-  const r = (v: number) => Math.max(1, Math.round(v * m));
-  const ent = [110, 95, 128, 102, 88, 140, 125, 98, 115, 132, 108, 121].map(
-    r,
-  );
-  const sal = [98, 118, 105, 125, 92, 135, 112, 108, 128, 105, 98, 142].map(
-    r,
-  );
-  return { year: y, entradas: ent, salidas: sal };
-}
+// function demoEntradasSalidas(y: number): EntradasSalidasResp {
+//   const m = 1 + (y - 2025) * 0.03;
+//   const r = (v: number) => Math.max(1, Math.round(v * m));
+//   const ent = [110, 95, 128, 102, 88, 140, 125, 98, 115, 132, 108, 121].map(
+//     r,
+//   );
+//   const sal = [98, 118, 105, 125, 92, 135, 112, 108, 128, 105, 98, 142].map(
+//     r,
+//   );
+//   return { year: y, entradas: ent, salidas: sal };
+// }
 
-function demoGanancias(y: number): GananciasMesResp {
-  const m = 1 + (y - 2025) * 0.03;
-  const base = [18.2, 19.1, 17.5, 20.3, 19.8, 21.2, 18.9, 20.1, 19.4, 18.6, 19.0, 20.5];
-  const k = 1000;
-  return {
-    year: y,
-    porMes: base.map((b, i) => ({
-      mes: i + 1,
-      monto: Math.round(b * m * k),
-    })),
-  };
-}
+// function demoGanancias(y: number): GananciasMesResp {
+//   const m = 1 + (y - 2025) * 0.03;
+//   const base = [18.2, 19.1, 17.5, 20.3, 19.8, 21.2, 18.9, 20.1, 19.4, 18.6, 19.0, 20.5];
+//   const k = 1000;
+//   return {
+//     year: y,
+//     porMes: base.map((b, i) => ({
+//       mes: i + 1,
+//       monto: Math.round(b * m * k),
+//     })),
+//   };
+// }
 
-function demoTopVendidos(): TopProducto[] {
-  return [
-    { nombre: 'Cereza / Wild Cherry', cantidad: 128 },
-    { nombre: 'Royal Pine', cantidad: 115 },
-    { nombre: 'New Car', cantidad: 98 },
-    { nombre: 'Ice Black', cantidad: 92 },
-    { nombre: 'Peachy Peach / Peach Ginger Spritz', cantidad: 86 },
-    { nombre: 'Cherry Blossom Honey', cantidad: 78 },
-    { nombre: 'True North', cantidad: 72 },
-    { nombre: 'Fresa', cantidad: 68 },
-    { nombre: 'Bayside Breeze', cantidad: 61 },
-    { nombre: 'Lavanda', cantidad: 55 },
-    { nombre: 'Gold', cantidad: 48 },
-    { nombre: 'Barco Turquesa', cantidad: 42 },
-  ];
-}
+// function demoTopVendidos(): TopProducto[] {
+//   return [
+//     { nombre: 'Cereza / Wild Cherry', cantidad: 128 },
+//     { nombre: 'Royal Pine', cantidad: 115 },
+//     { nombre: 'New Car', cantidad: 98 },
+//     { nombre: 'Ice Black', cantidad: 92 },
+//     { nombre: 'Peachy Peach / Peach Ginger Spritz', cantidad: 86 },
+//     { nombre: 'Cherry Blossom Honey', cantidad: 78 },
+//     { nombre: 'True North', cantidad: 72 },
+//     { nombre: 'Fresa', cantidad: 68 },
+//     { nombre: 'Bayside Breeze', cantidad: 61 },
+//     { nombre: 'Lavanda', cantidad: 55 },
+//     { nombre: 'Gold', cantidad: 48 },
+//     { nombre: 'Barco Turquesa', cantidad: 42 },
+//   ];
+// }
 
 @Component({
   selector: 'app-dashboard',
@@ -229,19 +229,19 @@ export class Dashboard implements OnInit, OnDestroy {
         .pipe(catchError(() => of<TopProducto[]>([]))),
     }).subscribe({
       next: ({ resumen, entradasSalidas, ganancias, categoria, top }) => {
-        if (USAR_DEMO_DASHBOARD) {
-          this.resumen = demoResumenKpi(this.anio);
-          this.topVendidos = demoTopVendidos();
-          this.cargando = false;
-          this.cdr.detectChanges();
-          setTimeout(() => {
-            this.destruirGraficos();
-            this.crearGraficoEntradasSalidas(demoEntradasSalidas(this.anio));
-            this.crearGraficoCategoria(DEMO_CATEGORIAS);
-            this.crearGraficoGanancias(demoGanancias(this.anio));
-          }, 0);
-          return;
-        }
+        // if (USAR_DEMO_DASHBOARD) {
+        //   this.resumen = demoResumenKpi(this.anio);
+        //   this.topVendidos = demoTopVendidos();
+        //   this.cargando = false;
+        //   this.cdr.detectChanges();
+        //   setTimeout(() => {
+        //     this.destruirGraficos();
+        //     this.crearGraficoEntradasSalidas(demoEntradasSalidas(this.anio));
+        //     this.crearGraficoCategoria(DEMO_CATEGORIAS);
+        //     this.crearGraficoGanancias(demoGanancias(this.anio));
+        //   }, 0);
+        //   return;
+        // }
         this.resumen = { ...vacioResumen, ...resumen };
         this.topVendidos = top;
         this.cargando = false;

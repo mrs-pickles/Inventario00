@@ -1,0 +1,234 @@
+<div class="clientes">
+  <p-toast></p-toast>
+  <header class="clientes__barra">
+    <h1 class="clientes__titulo">
+      Clientes
+      @if (clientes.length > 0) {
+        <span class="clientes__contador">({{ clientes.length }} registrados)</span>
+      }
+    </h1>
+    <button
+      pButton
+      type="button"
+      label="Nuevo cliente"
+      icon="pi pi-plus"
+      class="clientes__btn-crear"
+      (click)="abrirCrear()"
+    ></button>
+  </header>
+
+  @if (errorMsg) {
+    <p class="clientes__alert clientes__alert--error" role="alert">{{ errorMsg }}</p>
+  }
+
+  @if (cargando) {
+    <p class="clientes__alert clientes__alert--info">Cargando clientes…</p>
+  }
+
+  <div class="clientes__toolbar">
+    <span class="p-input-icon-left clientes__buscador">
+      <i class="pi pi-search" aria-hidden="true"></i>
+      <input
+        pInputText
+        type="search"
+        placeholder="Buscar por nombre, documento, email o teléfono"
+        [(ngModel)]="searchText"
+        (ngModelChange)="onBusquedaCambiada()"
+        name="buscarCliente"
+        autocomplete="off"
+      />
+    </span>
+  </div>
+
+  <div class="clientes__tabla-wrap">
+    <div class="clientes__paginador">
+      <span class="clientes__paginador-info">{{ paginaReporte }}</span>
+      <label>
+        <select
+          class="clientes__select-rows"
+          [(ngModel)]="filasPorPagina"
+          (ngModelChange)="onFilasPorPaginaChange($event)"
+        >
+          @for (n of [10, 25, 50]; track n) {
+            <option [ngValue]="n">{{ n }}</option>
+          }
+        </select>
+      </label>
+      <button
+        pButton
+        type="button"
+        icon="pi pi-angle-left"
+        [text]="true"
+        [disabled]="pagina <= 0"
+        (click)="paginaAnterior()"
+      ></button>
+      <button
+        pButton
+        type="button"
+        icon="pi pi-angle-right"
+        [text]="true"
+        [disabled]="pagina >= totalPaginas - 1"
+        (click)="paginaSiguiente()"
+      ></button>
+    </div>
+
+    <div class="clientes__tabla-scroll">
+      <table class="clientes__tabla-html">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Documento</th>
+            <th>Email</th>
+            <th>Teléfono</th>
+            <th>Dirección</th>
+            <th>Activo</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (c of clientesPagina; track c.id) {
+            <tr [class.inactivo]="!c.activo">
+              <td class="cell-name">{{ c.nombre }}</td>
+              <td>{{ c.documento || '—' }}</td>
+              <td>{{ c.email || '—' }}</td>
+              <td>{{ c.telefono || '—' }}</td>
+              <td class="cell-dir">{{ c.direccion || '—' }}</td>
+              <td class="td-centrado">
+                <p-toggleswitch
+                  [ngModel]="c.activo"
+                  (ngModelChange)="onActivoChange($event, c)"
+                  [id]="'act-' + c.id"
+                />
+              </td>
+              <td class="td-acciones">
+                <button
+                  pButton
+                  type="button"
+                  icon="pi pi-pencil"
+                  [rounded]="true"
+                  [text]="true"
+                  pTooltip="Editar"
+                  (click)="abrirEditar(c)"
+                ></button>
+                <button
+                  pButton
+                  type="button"
+                  icon="pi pi-trash"
+                  [rounded]="true"
+                  [text]="true"
+                  severity="danger"
+                  pTooltip="Eliminar"
+                  (click)="eliminarCliente(c.id)"
+                ></button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="7" class="empty-table">
+                <i class="pi pi-inbox" aria-hidden="true"></i>
+                <span>
+                  @if (searchText.trim()) {
+                    No hay resultados. Prueba otra búsqueda.
+                  } @else {
+                    No hay clientes registrados. Crea el primero.
+                  }
+                </span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Diálogo para crear/editar -->
+  <p-dialog
+    [header]="editando ? 'Editar cliente' : 'Nuevo cliente'"
+    [(visible)]="mostrarFormulario"
+    [modal]="true"
+    [dismissableMask]="true"
+    [style]="{ width: 'min(32rem, 95vw)' }"
+    (onHide)="cerrarFormulario()"
+  >
+    <div class="cliente__form">
+      <div class="field">
+        <label for="cli-nombre">Nombre *</label>
+        <input
+          pInputText
+          id="cli-nombre"
+          class="w-full"
+          [(ngModel)]="nuevoCliente.nombre"
+          placeholder="Nombre completo"
+        />
+      </div>
+      <div class="field">
+        <label for="cli-doc">Documento (NIT/CI)</label>
+        <input
+          pInputText
+          id="cli-doc"
+          class="w-full"
+          [(ngModel)]="nuevoCliente.documento"
+          placeholder="Opcional"
+        />
+      </div>
+      <div class="field">
+        <label for="cli-email">Email</label>
+        <input
+          pInputText
+          id="cli-email"
+          type="email"
+          class="w-full"
+          [(ngModel)]="nuevoCliente.email"
+          placeholder="cliente@ejemplo.com"
+        />
+      </div>
+      <div class="field">
+        <label for="cli-tel">Teléfono</label>
+        <input
+          pInputText
+          id="cli-tel"
+          class="w-full"
+          [(ngModel)]="nuevoCliente.telefono"
+          placeholder="Teléfono de contacto"
+        />
+      </div>
+      <div class="field">
+        <label for="cli-dir">Dirección</label>
+        <textarea
+          id="cli-dir"
+          class="w-full p-inputtext p-component cliente__textarea"
+          rows="2"
+          [(ngModel)]="nuevoCliente.direccion"
+          placeholder="Dirección completa"
+        ></textarea>
+      </div>
+      <div class="field cliente__activo-fila">
+        <label for="cli-activo">Cliente activo</label>
+        <p-toggleswitch
+          id="cli-activo"
+          [(ngModel)]="nuevoCliente.activo"
+        />
+      </div>
+    </div>
+    <ng-template pTemplate="footer">
+      <div class="cliente__footer-actions">
+        <button
+          pButton
+          type="button"
+          label="Cancelar"
+          class="cliente__btn-sec"
+          (click)="cerrarFormulario()"
+        ></button>
+        <button
+          pButton
+          type="button"
+          [label]="editando ? 'Guardar cambios' : 'Crear cliente'"
+          icon="pi pi-check"
+          class="cliente__btn-prim"
+          (click)="guardarCliente()"
+          [disabled]="!nuevoCliente.nombre.trim()"
+        ></button>
+      </div>
+    </ng-template>
+  </p-dialog>
+</div>

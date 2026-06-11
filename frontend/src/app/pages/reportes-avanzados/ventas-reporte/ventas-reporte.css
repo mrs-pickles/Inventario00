@@ -1,0 +1,86 @@
+.ventas-reporte {
+  padding: 1rem 0;
+}
+
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-end;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #f2ede4;
+  border-radius: 8px;
+}
+
+.filtros__campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.filtros__campo label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #3a3a35;
+}
+
+.filtros__select {
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #c4c0b8;
+  background: #fffcf8;
+}
+
+.filtros__acciones {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #5f5c56;
+}
+
+.kpi-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.kpi-card {
+  background: linear-gradient(145deg, #4a3f36 0%, #3a322a 100%);
+  color: #f5f2eb;
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+}
+
+.kpi-card__label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.9;
+}
+
+.kpi-card__value {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.grafico {
+  margin-bottom: 1.5rem;
+}
+
+.tabla {
+  margin-top: 1rem;
+}
+.input-fecha {
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #c4c0b8;
+  background: #fffcf8;
+  font-family: inherit;
+}

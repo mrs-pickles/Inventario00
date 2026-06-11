@@ -1,0 +1,67 @@
+<div class="productos-reporte">
+  <div class="toolbar">
+    <div class="toolbar__limite">
+      <label>Mostrar:</label>
+      <div class="limite-buttons">
+        <button pButton 
+                [label]="'Top 5'" 
+                [class]="limite === 5 ? 'p-button-primary' : 'p-button-secondary'"
+                (click)="cambiarLimite(5)"></button>
+        <button pButton 
+                [label]="'Top 10'" 
+                [class]="limite === 10 ? 'p-button-primary' : 'p-button-secondary'"
+                (click)="cambiarLimite(10)"></button>
+        <button pButton 
+                [label]="'Top 20'" 
+                [class]="limite === 20 ? 'p-button-primary' : 'p-button-secondary'"
+                (click)="cambiarLimite(20)"></button>
+      </div>
+    </div>
+    <button pButton label="Actualizar" icon="pi pi-refresh" (click)="cargarReporte()"></button>
+  </div>
+
+  @if (cargando) {
+    <div class="loading">Cargando productos más vendidos...</div>
+  }
+
+  @if (!cargando && productos.length === 0) {
+    <div class="empty">No hay datos de ventas registradas.</div>
+  }
+
+  @if (!cargando && productos.length > 0) {
+    <p-card>
+      <p-table [value]="productos">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>#</th>
+            <th>Producto</th>
+            <th class="td-numero">Unidades vendidas</th>
+            <th class="td-numero">Total facturado</th>
+            <th>Participación</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-producto let-i="index">
+          <tr>
+            <td class="td-centrado">{{ i + 1 }}</td>
+            <td class="cell-producto">
+              <span class="producto-nombre">{{ producto.nombre }}</span>
+            </td>
+            <td class="td-numero">{{ producto.totalVendido }}</td>
+            <td class="td-numero">Bs. {{ moneda(producto.totalFacturado) }}</td>
+            <td>
+              <div class="progress-container">
+                <p-progressBar [value]="getPorcentaje(producto.totalVendido)" 
+                               [showValue]="false"></p-progressBar>
+                <span class="progress-value">{{ getPorcentaje(producto.totalVendido) | number:'1.0-0' }}%</span>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-card>
+
+    <div class="total-info">
+      <strong>Top {{ productos.length }}</strong> productos más vendidos
+    </div>
+  }
+</div>

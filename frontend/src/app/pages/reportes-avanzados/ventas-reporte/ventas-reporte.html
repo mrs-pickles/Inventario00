@@ -1,0 +1,74 @@
+<div class="ventas-reporte">
+  <div class="filtros">
+    <div class="filtros__campo">
+      <label>Fecha inicio</label>
+      <input type="date" [(ngModel)]="fechaInicio" class="input-fecha" />
+    </div>
+    <div class="filtros__campo">
+      <label>Fecha fin</label>
+      <input type="date" [(ngModel)]="fechaFin" class="input-fecha" />
+    </div>
+    <div class="filtros__campo">
+      <label>Agrupación</label>
+      <select [(ngModel)]="agrupacion" class="filtros__select">
+        <option value="dia">Por día</option>
+        <option value="mes">Por mes</option>
+        <option value="año">Por año</option>
+      </select>
+    </div>
+    <div class="filtros__acciones">
+      <button pButton label="Buscar" icon="pi pi-search" (click)="cargarReporte()"></button>
+      <button pButton label="Limpiar" icon="pi pi-refresh" class="p-button-secondary" (click)="resetFiltros()"></button>
+    </div>
+  </div>
+
+  @if (cargando) {
+    <div class="loading">Cargando datos...</div>
+  }
+
+  @if (data && !cargando) {
+    <div class="kpi-cards">
+      <div class="kpi-card">
+        <div class="kpi-card__label">Total ventas</div>
+        <div class="kpi-card__value">{{ data.totalVentas }}</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-card__label">Total ingresos</div>
+        <div class="kpi-card__value">Bs. {{ moneda(data.totalIngresos) }}</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-card__label">Promedio por venta</div>
+        <div class="kpi-card__value">Bs. {{ moneda(data.promedioVenta) }}</div>
+      </div>
+    </div>
+
+    <div class="grafico">
+      <p-card>
+        <p-chart type="line" [data]="chartData" [options]="chartOptions" height="300px"></p-chart>
+      </p-card>
+    </div>
+
+    <div class="tabla">
+      <p-card header="Ventas recientes">
+        <p-table [value]="data.ventasRecientes" [paginator]="true" [rows]="5">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>N° Venta</th>
+              <th>Fecha</th>
+              <th>Cliente</th>
+              <th>Total</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-venta>
+            <tr>
+              <td>{{ venta.numero }}</td>
+              <td>{{ venta.fecha | date:'dd/MM/yyyy' }}</td>
+              <td>{{ venta.cliente || '—' }}</td>
+              <td>Bs. {{ moneda(venta.total) }}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-card>
+    </div>
+  }
+</div>

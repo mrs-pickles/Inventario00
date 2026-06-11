@@ -1,0 +1,66 @@
+<div class="ganancias-reporte">
+  <div class="filtros">
+    <div class="filtros__campo">
+      <label>Fecha inicio</label>
+      <input type="date" [(ngModel)]="fechaInicio" class="input-fecha" />
+    </div>
+    <div class="filtros__campo">
+      <label>Fecha fin</label>
+      <input type="date" [(ngModel)]="fechaFin" class="input-fecha" />
+    </div>
+    <div class="filtros__acciones">
+      <button pButton label="Buscar" icon="pi pi-search" (click)="cargarReporte()"></button>
+      <button pButton label="Limpiar" icon="pi pi-refresh" class="p-button-secondary" (click)="resetFiltros()"></button>
+    </div>
+  </div>
+
+  @if (cargando) {
+    <div class="loading">Calculando ganancias...</div>
+  }
+
+  @if (data && !cargando) {
+    <div class="kpi-cards">
+      <div class="kpi-card">
+        <div class="kpi-card__label">Total ventas</div>
+        <div class="kpi-card__value">Bs. {{ moneda(data.totalVentas) }}</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-card__label">Costo de productos</div>
+        <div class="kpi-card__value">Bs. {{ moneda(data.costoTotal) }}</div>
+      </div>
+      <div class="kpi-card ganancia-card">
+        <div class="kpi-card__label">Ganancia</div>
+        <div class="kpi-card__value">Bs. {{ moneda(data.ganancia) }}</div>
+      </div>
+      <div class="kpi-card margen-card {{ getMargenClass() }}">
+        <div class="kpi-card__label">Margen de ganancia</div>
+        <div class="kpi-card__value">{{ data.margen }}%</div>
+      </div>
+    </div>
+
+    <div class="grafico">
+      <p-card>
+        <p-chart type="doughnut" [data]="chartData" [options]="chartOptions" height="300px"></p-chart>
+      </p-card>
+    </div>
+
+    <div class="detalle">
+      <p-card header="Análisis de rentabilidad">
+        <div class="detalle__texto">
+          <p>La ganancia total es de <strong>Bs. {{ moneda(data.ganancia) }}</strong> 
+             sobre un total de ventas de <strong>Bs. {{ moneda(data.totalVentas) }}</strong>.</p>
+          
+          @if (data.margen >= 30) {
+            <p class="texto-excelente">✅ Excelente margen de ganancia. El negocio es muy rentable.</p>
+          } @else if (data.margen >= 15) {
+            <p class="texto-bueno">👍 Buen margen de ganancia. El negocio es rentable.</p>
+          } @else if (data.margen >= 5) {
+            <p class="texto-regular">⚠️ Margen aceptable. Busque optimizar costos.</p>
+          } @else {
+            <p class="texto-malo">❌ Margen bajo. Revise precios y costos.</p>
+          }
+        </div>
+      </p-card>
+    </div>
+  }
+</div>

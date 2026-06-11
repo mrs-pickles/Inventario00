@@ -1,0 +1,117 @@
+.ganancias-reporte {
+  padding: 1rem 0;
+}
+
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-end;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #f2ede4;
+  border-radius: 8px;
+}
+
+.filtros__campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.filtros__campo label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #3a3a35;
+}
+
+.filtros__acciones {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #5f5c56;
+}
+
+.kpi-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.kpi-card {
+  background: linear-gradient(145deg, #4a3f36 0%, #3a322a 100%);
+  color: #f5f2eb;
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+}
+
+.ganancia-card {
+  background: linear-gradient(145deg, #2d4a32 0%, #1e3a22 100%);
+}
+
+.margen-card {
+  background: linear-gradient(145deg, #3d4f3e 0%, #2a342a 100%);
+}
+
+.margen-alto {
+  background: linear-gradient(145deg, #2d4a32 0%, #1e3a22 100%);
+}
+
+.margen-medio {
+  background: linear-gradient(145deg, #4a6b3e 0%, #3a5a2e 100%);
+}
+
+.margen-bajo {
+  background: linear-gradient(145deg, #8b5e3c 0%, #6b4a2a 100%);
+}
+
+.kpi-card__label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.9;
+}
+
+.kpi-card__value {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.grafico {
+  margin-bottom: 1.5rem;
+}
+
+.detalle {
+  margin-top: 1rem;
+}
+
+.detalle__texto p {
+  margin: 0.5rem 0;
+  line-height: 1.5;
+}
+
+.texto-excelente {
+  color: #2d4a32;
+  font-weight: 500;
+}
+
+.texto-bueno {
+  color: #4a6b3e;
+  font-weight: 500;
+}
+
+.texto-regular {
+  color: #e67e22;
+  font-weight: 500;
+}
+
+.texto-malo {
+  color: #c0392b;
+  font-weight: 500;
+}

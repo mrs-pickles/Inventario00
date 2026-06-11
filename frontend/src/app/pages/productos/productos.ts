@@ -16,6 +16,9 @@ import { finalize } from 'rxjs';
 import { ProductoService } from '../../services/producto.service';
 import { CategoriaService } from '../../services/categoria.service';
 
+import { MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
+
 type Orden = 'nombre' | 'precio' | 'categoria' | 'costo' | 'sku';
 
 @Component({
@@ -32,7 +35,9 @@ type Orden = 'nombre' | 'precio' | 'categoria' | 'costo' | 'sku';
     TagModule,
     TooltipModule,
     DialogModule,
+    ToastModule,
   ],
+  providers: [MessageService],
   templateUrl: './productos.html',
   styleUrl: './productos.css',
 })
@@ -40,6 +45,7 @@ export class Productos implements OnInit {
   private productoService = inject(ProductoService);
   private categoriaService = inject(CategoriaService);
   private cdr = inject(ChangeDetectorRef);
+  private messageService = inject(MessageService);
 
   productos: any[] = [];
   categorias: any[] = [];
@@ -328,35 +334,43 @@ export class Productos implements OnInit {
   }
 
   guardarProducto() {
-    if (!this.nuevoProducto.nombre.trim()) {
-      return;
-    }
-    if (this.nuevoProducto.categoriaId == null || this.nuevoProducto.categoriaId === 0) {
-      return;
-    }
-
-    const data = this.buildPayload();
-
-    if (this.editando) {
-      this.productoService.update(this.nuevoProducto.id, data).subscribe({
-        next: () => {
-          this.cargarProductos();
-          this.mostrarFormulario = false;
-          this.resetFormulario();
-        },
-        error: (err) => console.error('ERROR UPDATE', err),
-      });
-    } else {
-      this.productoService.create(data).subscribe({
-        next: () => {
-          this.cargarProductos();
-          this.mostrarFormulario = false;
-          this.resetFormulario();
-        },
-        error: (err) => console.error('ERROR CREATE', err),
-      });
-    }
+  if (!this.nuevoProducto.nombre.trim()) {
+    this.messageService.add({ severity: 'warn', summary: 'Advertencia', detail: 'El nombre es requerido' });
+    return;
   }
+  if (this.nuevoProducto.categoriaId == null || this.nuevoProducto.categoriaId === 0) {
+    this.messageService.add({ severity: 'warn', summary: 'Advertencia', detail: 'Seleccione una categoría' });
+    return;
+  }
+
+  const data = this.buildPayload();
+
+  if (this.editando) {
+    this.productoService.update(this.nuevoProducto.id, data).subscribe({
+      next: () => {
+        this.cargarProductos();
+        this.mostrarFormulario = false;
+        this.resetFormulario();
+        this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Producto actualizado correctamente' });
+      },
+      error: (err) => {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.message || 'Error al actualizar' });
+      },
+    });
+  } else {
+    this.productoService.create(data).subscribe({
+      next: () => {
+        this.cargarProductos();
+        this.mostrarFormulario = false;
+        this.resetFormulario();
+        this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Producto creado correctamente' });
+      },
+      error: (err) => {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.message || 'Error al crear' });
+      },
+    });
+  }
+}
 
   editarProducto(p: any) {
     const pr = Number(p.precio) || 0;
@@ -380,21 +394,37 @@ export class Productos implements OnInit {
   }
 
   onActivoChange(activo: boolean, p: any) {
-    if (!p.categoria?.id) {
-      return;
-    }
-    this.productoService
-      .update(p.id, this.payloadDesdeFila(p, activo) as any)
-      .subscribe({ next: () => this.cargarProductos() });
+  if (!p.categoria?.id) {
+    return;
   }
+  this.productoService
+    .update(p.id, this.payloadDesdeFila(p, activo) as any)
+    .subscribe({ 
+      next: () => {
+        this.cargarProductos();
+        this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Estado del producto actualizado' });
+      },
+      error: () => {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cambiar estado' });
+      }
+    });
+}
 
   eliminarProducto(id: number) {
-    this.productoService.delete(id).subscribe(() => {
-      this.productos = this.productos.filter((p) => p.id !== id);
-      this.ajustarPagina();
-      this.cdr.markForCheck();
+  if (confirm('¿Eliminar este producto?')) {
+    this.productoService.delete(id).subscribe({
+      next: () => {
+        this.productos = this.productos.filter((p) => p.id !== id);
+        this.ajustarPagina();
+        this.cdr.markForCheck();
+        this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Producto eliminado correctamente' });
+      },
+      error: () => {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al eliminar' });
+      },
     });
   }
+}
 
   resetFormulario() {
     this.nuevoProducto = {

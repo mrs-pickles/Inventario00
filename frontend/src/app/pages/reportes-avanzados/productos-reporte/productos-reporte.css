@@ -1,0 +1,76 @@
+.productos-reporte {
+  padding: 1rem 0;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #f2ede4;
+  border-radius: 8px;
+}
+
+.toolbar__limite {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.toolbar__limite label {
+  font-weight: 600;
+  color: #3a3a35;
+}
+
+.limite-buttons {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.loading, .empty {
+  text-align: center;
+  padding: 2rem;
+  color: #5f5c56;
+}
+
+.cell-producto {
+  font-weight: 500;
+}
+
+.producto-nombre {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.td-numero {
+  text-align: right;
+}
+
+.td-centrado {
+  text-align: center;
+}
+
+.progress-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.progress-value {
+  font-size: 0.8rem;
+  min-width: 3rem;
+  color: #5f5c56;
+}
+
+.total-info {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: #f2ede4;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 0.85rem;
+}

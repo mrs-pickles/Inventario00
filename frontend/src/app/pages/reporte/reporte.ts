@@ -19,56 +19,56 @@ export type FilaExistencia = {
 };
 
 /** Filas de ejemplo: total y columnas alineados (sin depender de la API). */
-const FILAS_DEMO: FilaExistencia[] = [
-  {
-    id: 10001,
-    nombre: 'Cereza / Wild Cherry',
-    sku: 'LT4-00001',
-    categoria: 'DULCES & FRUTALES',
-    cantidad: 48,
-    valor: 936.0,
-  },
-  {
-    id: 10002,
-    nombre: 'Royal Pine',
-    sku: 'LT4-00020',
-    categoria: 'FRESCOS & NATURALES',
-    cantidad: 36,
-    valor: 720.0,
-  },
-  {
-    id: 10003,
-    nombre: 'New Car',
-    sku: 'LT4-00037',
-    categoria: 'INTENSOS & ESPECIALES',
-    cantidad: 52,
-    valor: 1066.0,
-  },
-  {
-    id: 10004,
-    nombre: 'Cherry Blossom Honey',
-    sku: 'LT4-00013',
-    categoria: 'FLORALES & SUAVES',
-    cantidad: 24,
-    valor: 456.0,
-  },
-  {
-    id: 10005,
-    nombre: 'Bandera Americana',
-    sku: 'LT4-00040',
-    categoria: 'DISEÑOS & EDICIONES ESPECIALES',
-    cantidad: 15,
-    valor: 300.0,
-  },
-  {
-    id: 10006,
-    nombre: 'Ice Black',
-    sku: 'LT4-00027',
-    categoria: 'INTENSOS & ESPECIALES',
-    cantidad: 30,
-    valor: 615.0,
-  },
-];
+// const FILAS_DEMO: FilaExistencia[] = [
+//   {
+//     id: 10001,
+//     nombre: 'Cereza / Wild Cherry',
+//     sku: 'LT4-00001',
+//     categoria: 'DULCES & FRUTALES',
+//     cantidad: 48,
+//     valor: 936.0,
+//   },
+//   {
+//     id: 10002,
+//     nombre: 'Royal Pine',
+//     sku: 'LT4-00020',
+//     categoria: 'FRESCOS & NATURALES',
+//     cantidad: 36,
+//     valor: 720.0,
+//   },
+//   {
+//     id: 10003,
+//     nombre: 'New Car',
+//     sku: 'LT4-00037',
+//     categoria: 'INTENSOS & ESPECIALES',
+//     cantidad: 52,
+//     valor: 1066.0,
+//   },
+//   {
+//     id: 10004,
+//     nombre: 'Cherry Blossom Honey',
+//     sku: 'LT4-00013',
+//     categoria: 'FLORALES & SUAVES',
+//     cantidad: 24,
+//     valor: 456.0,
+//   },
+//   {
+//     id: 10005,
+//     nombre: 'Bandera Americana',
+//     sku: 'LT4-00040',
+//     categoria: 'DISEÑOS & EDICIONES ESPECIALES',
+//     cantidad: 15,
+//     valor: 300.0,
+//   },
+//   {
+//     id: 10006,
+//     nombre: 'Ice Black',
+//     sku: 'LT4-00027',
+//     categoria: 'INTENSOS & ESPECIALES',
+//     cantidad: 30,
+//     valor: 615.0,
+//   },
+// ];
 
 function totalDesdeFilas(f: FilaExistencia[]): number {
   return Math.round(f.reduce((s, r) => s + r.valor, 0) * 100) / 100;
@@ -112,10 +112,13 @@ export class Reporte implements OnInit {
   } | null = null;
 
   constructor() {
-    this.filas = FILAS_DEMO.map((f) => ({ ...f }));
-    this.existenciasTotalBs = totalDesdeFilas(this.filas);
-    this.esDemostracion = true;
-    this.avisoReporte = 'Cargando inventario real. Mientras tanto se muestran filas de ejemplo.';
+    // this.filas = FILAS_DEMO.map((f) => ({ ...f }));
+    this.filas = [];
+    // this.existenciasTotalBs = totalDesdeFilas(this.filas);
+    this.existenciasTotalBs = 0;
+    this.esDemostracion = false;
+    // this.avisoReporte = 'Cargando inventario real. Mientras tanto se muestran filas de ejemplo.';
+    this.avisoReporte = null;
     this.cargando = false;
   }
 
@@ -190,10 +193,13 @@ export class Reporte implements OnInit {
           }
           this.reservaAnteActualizacion = null;
         } else {
-          this.recuperarOVoltearADemo(
-            'Inventario vacío: se muestran filas y totales de ejemplo (aromas de referencia).',
-            false,
-          );
+          // this.recuperarOVoltearADemo(
+          //   'Inventario vacío: se muestran filas y totales de ejemplo (aromas de referencia).',
+          //   false,
+          // );
+          this.filas = [];
+          this.existenciasTotalBs = 0;
+          this.cargando = false;
         }
       },
       error: (e) => {
@@ -202,10 +208,12 @@ export class Reporte implements OnInit {
           e?.error?.message ||
           e?.message ||
           (e?.status ? `Error ${e.status}` : 'No se pudo conectar a http://localhost:3000');
-        this.recuperarOVoltearADemo(
-          `${detalle} Se rellenan el informe y el resumen con datos de demostración si no había otra vista guardada.`,
-          true,
-        );
+        // this.recuperarOVoltearADemo(
+        //   `${detalle} Se rellenan el informe y el resumen con datos de demostración si no había otra vista guardada.`,
+        //   true,
+        // );
+        this.filas = [];
+        this.existenciasTotalBs = 0;
       },
     });
   }
@@ -238,8 +246,10 @@ export class Reporte implements OnInit {
   }
 
   private aplicarDatosDemostracion(aviso: string, conError: boolean) {
-    this.filas = FILAS_DEMO.map((f) => ({ ...f }));
-    this.existenciasTotalBs = totalDesdeFilas(this.filas);
+    // this.filas = FILAS_DEMO.map((f) => ({ ...f }));
+    this.filas = [];
+    // this.existenciasTotalBs = totalDesdeFilas(this.filas);
+    this.existenciasTotalBs = 0;
     this.esDemostracion = true;
     this.avisoReporte = conError ? null : aviso;
     this.errorMsg = conError ? aviso : null;

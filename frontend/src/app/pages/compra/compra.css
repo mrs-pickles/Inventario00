@@ -1,0 +1,309 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.compras {
+  max-width: 90rem;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.compras__barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.9rem 1.25rem;
+  margin-bottom: 1.1rem;
+}
+
+.compras__titulo {
+  margin: 0;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #2c2b28;
+}
+
+.compras__contador {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #5f5c56;
+  margin-left: 0.35rem;
+}
+
+.compras__btn-crear {
+  background: #3d4f3e !important;
+  border: 1px solid #2a342a !important;
+  color: #f5f2eb !important;
+  font-weight: 600;
+  padding: 0.5rem 1rem !important;
+  border-radius: 6px;
+}
+
+.compras__alert {
+  margin: 0 0 0.85rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 6px;
+}
+
+.compras__alert--info {
+  background: rgba(90, 111, 93, 0.12);
+  border: 1px solid rgba(90, 111, 93, 0.25);
+}
+
+.compras__alert--error {
+  background: rgba(180, 60, 50, 0.1);
+  border: 1px solid rgba(180, 60, 50, 0.35);
+  color: #5c2a24;
+}
+
+.compras__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.compras__buscador {
+  flex: 1;
+  min-width: 200px;
+}
+
+.compras__buscador input {
+  width: 100%;
+  max-width: 28rem;
+  background: #fffcf8;
+  border: 1px solid #c4c0b8;
+  border-radius: 6px;
+  padding: 0.5rem 0.65rem 0.5rem 2.25rem;
+}
+
+.compras__tabla-wrap {
+  background: #fffcf8;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.compras__paginador {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem 0.75rem;
+  padding: 0.5rem 0.65rem;
+  background: #f2ede4;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.compras__paginador-info {
+  margin-right: auto;
+}
+
+.compras__select-rows {
+  font: inherit;
+  padding: 0.25rem 0.4rem;
+  border-radius: 4px;
+  border: 1px solid #c4c0b8;
+  background: #fffcf8;
+}
+
+.compras__tabla-scroll {
+  overflow-x: auto;
+  max-height: 55vh;
+  overflow-y: auto;
+}
+
+.compras__tabla-html {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.compras__tabla-html thead th {
+  position: sticky;
+  top: 0;
+  background: #e8e2d8;
+  color: #2c2b28;
+  font-weight: 600;
+  font-size: 0.82rem;
+  text-align: left;
+  padding: 0.7rem 0.65rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.compras__tabla-html tbody td {
+  padding: 0.6rem 0.65rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.cell-numero {
+  font-family: ui-monospace, monospace;
+  font-size: 0.85rem;
+}
+
+.td-numero {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.td-centrado {
+  text-align: center;
+}
+
+.td-acciones {
+  white-space: nowrap;
+  text-align: center;
+}
+
+.empty-table {
+  text-align: center;
+  padding: 2.5rem 1rem !important;
+  color: #6b6660;
+}
+
+.empty-table .pi {
+  display: block;
+  font-size: 1.75rem;
+  margin-bottom: 0.5rem;
+  opacity: 0.5;
+}
+
+/* Formulario nueva compra */
+.compra__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.field label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #3a3a35;
+}
+
+.compra__productos-agregar {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
+  gap: 0.75rem;
+  align-items: end;
+  background: #f2ede4;
+  padding: 0.75rem;
+  border-radius: 8px;
+}
+
+.compra__producto-select {
+  flex: 2;
+}
+
+.compra__producto-cantidad {
+  width: 100px;
+}
+
+.compra__producto-precio {
+  width: 130px;
+}
+
+.compra__btn-agregar {
+  background: #3d4f3e !important;
+  border: 1px solid #2a342a !important;
+  color: #f5f2eb !important;
+  height: 38px;
+}
+
+.compra__detalles {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.compra__detalles-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.compra__detalles-tabla thead th {
+  background: #e8e2d8;
+  padding: 0.5rem 0.65rem;
+  text-align: left;
+  font-weight: 600;
+}
+
+.compra__detalles-tabla tbody td {
+  padding: 0.5rem 0.65rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.compra__resumen {
+  background: #f2ede4;
+  padding: 0.75rem;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.compra__resumen-linea {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.compra__total {
+  font-weight: bold;
+  font-size: 1.1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  padding-top: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.compra__textarea {
+  resize: vertical;
+  font-family: inherit;
+  font-size: 0.9rem;
+  padding: 0.5rem 0.65rem;
+  border-radius: 6px;
+  border: 1px solid #c4c0b8;
+  background: #fffcf8;
+  width: 100%;
+}
+
+.compra__footer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.6rem;
+}
+
+.compra__btn-sec {
+  background: #e8e2d8 !important;
+  border: 1px solid #c4c0b8 !important;
+  color: #2c2b28 !important;
+}
+
+.compra__btn-prim {
+  background: #3d4f3e !important;
+  border: 1px solid #2a342a !important;
+  color: #f5f2eb !important;
+}
+
+@media (max-width: 800px) {
+  .compra__productos-agregar {
+    grid-template-columns: 1fr;
+  }
+  .compra__producto-cantidad,
+  .compra__producto-precio {
+    width: 100%;
+  }
+}

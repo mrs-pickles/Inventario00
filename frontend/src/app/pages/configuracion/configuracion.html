@@ -1,0 +1,226 @@
+<div class="configuracion">
+  <p-toast></p-toast>
+  
+  <header class="configuracion__barra">
+    <h1 class="configuracion__titulo">
+      Configuración del sistema
+      @if (configs.length > 0) {
+        <span class="configuracion__contador">({{ configs.length }} parámetros)</span>
+      }
+    </h1>
+    <button
+      pButton
+      type="button"
+      label="Nueva configuración"
+      icon="pi pi-plus"
+      class="configuracion__btn-crear"
+      (click)="abrirCrear()"
+    ></button>
+  </header>
+
+  @if (errorMsg) {
+    <p class="configuracion__alert configuracion__alert--error" role="alert">{{ errorMsg }}</p>
+  }
+
+  @if (cargando) {
+    <p class="configuracion__alert configuracion__alert--info">Cargando configuraciones…</p>
+  }
+
+  <div class="configuracion__toolbar">
+    <span class="p-input-icon-left configuracion__buscador">
+      <i class="pi pi-search" aria-hidden="true"></i>
+      <input
+        pInputText
+        type="search"
+        placeholder="Buscar por clave o descripción"
+        [(ngModel)]="searchText"
+        name="buscarConfig"
+        autocomplete="off"
+      />
+    </span>
+  </div>
+
+  <div class="configuracion__tabla-wrap">
+    <div class="configuracion__tabla-scroll">
+      <table class="configuracion__tabla-html">
+        <thead>
+          <tr>
+            <th>Clave</th>
+            <th>Valor</th>
+            <th>Descripción</th>
+            <th>Tipo</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (c of configsVista; track c.clave) {
+            <tr>
+              <td class="cell-clave">
+                <code>{{ c.clave }}</code>
+              </td>
+              <td class="cell-valor">
+                @if (c.tipo === 'boolean') {
+                  <p-tag [value]="c.valor === 'true' ? 'Verdadero' : 'Falso'" [severity]="c.valor === 'true' ? 'success' : 'secondary'" />
+                } @else if (c.tipo === 'number') {
+                  <span class="td-numero">{{ c.valor | number }}</span>
+                } @else if (c.tipo === 'json') {
+                  <span class="cell-json">{{ c.valor | slice:0:50 }}{{ c.valor.length > 50 ? '…' : '' }}</span>
+                } @else {
+                  <span>{{ c.valor }}</span>
+                }
+              </td>
+              <td>{{ c.descripcion || '—' }}</td>
+              <td class="td-centrado">
+                <p-tag [value]="c.tipo" [severity]="getTipoBadge(c.tipo)" size="small" />
+              </td>
+              <td class="td-acciones">
+                <button
+                  pButton
+                  type="button"
+                  icon="pi pi-pencil"
+                  [rounded]="true"
+                  [text]="true"
+                  pTooltip="Editar"
+                  (click)="abrirEditar(c)"
+                ></button>
+                <button
+                  pButton
+                  type="button"
+                  icon="pi pi-trash"
+                  [rounded]="true"
+                  [text]="true"
+                  severity="danger"
+                  pTooltip="Eliminar"
+                  (click)="eliminarConfiguracion(c.clave)"
+                ></button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5" class="empty-table">
+                <i class="pi pi-inbox" aria-hidden="true"></i>
+                <span>
+                  @if (searchText.trim()) {
+                    No hay resultados. Prueba otra búsqueda.
+                  } @else {
+                    No hay configuraciones. Crea la primera.
+                  }
+                </span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Diálogo para crear/editar -->
+  <p-dialog
+    [header]="editando ? 'Editar configuración' : 'Nueva configuración'"
+    [(visible)]="mostrarFormulario"
+    [modal]="true"
+    [dismissableMask]="true"
+    [style]="{ width: 'min(36rem, 95vw)' }"
+    (onHide)="cerrarFormulario()"
+  >
+    <div class="config__form">
+      <div class="field">
+        <label for="config-clave">Clave *</label>
+        <input
+          pInputText
+          id="config-clave"
+          class="w-full"
+          [(ngModel)]="nuevaConfig.clave"
+          placeholder="Ej: empresa.nombre, impuesto.iva"
+          [disabled]="editando"
+        />
+        <small class="field-hint">Identificador único (solo letras, números, puntos)</small>
+      </div>
+
+      <div class="field">
+        <label for="config-tipo">Tipo de dato</label>
+        <p-select
+          id="config-tipo"
+          [options]="tipos"
+          optionLabel="label"
+          optionValue="value"
+          [(ngModel)]="nuevaConfig.tipo"
+          [style]="{ width: '100%' }"
+          [disabled]="editando"
+        />
+      </div>
+
+      <div class="field">
+        <label for="config-valor">Valor</label>
+        
+        @if (nuevaConfig.tipo === 'boolean') {
+          <p-select
+            id="config-valor"
+            [options]="[
+              { label: 'Verdadero', value: 'true' },
+              { label: 'Falso', value: 'false' }
+            ]"
+            optionLabel="label"
+            optionValue="value"
+            [(ngModel)]="nuevaConfig.valor"
+            [style]="{ width: '100%' }"
+          />
+        } @else if (nuevaConfig.tipo === 'number') {
+          <p-inputNumber
+            id="config-valor"
+            [(ngModel)]="nuevaConfig.valor"
+            [style]="{ width: '100%' }"
+          />
+        } @else if (nuevaConfig.tipo === 'json') {
+          <textarea
+            id="config-valor"
+            class="config__textarea"
+            rows="5"
+            [(ngModel)]="nuevaConfig.valor"
+            placeholder='{"key": "value"}'
+          ></textarea>
+        } @else {
+          <textarea
+            id="config-valor"
+            class="config__textarea"
+            rows="3"
+            [(ngModel)]="nuevaConfig.valor"
+            placeholder="Valor de la configuración"
+          ></textarea>
+        }
+      </div>
+
+      <div class="field">
+        <label for="config-desc">Descripción</label>
+        <textarea
+          id="config-desc"
+          class="config__textarea"
+          rows="2"
+          [(ngModel)]="nuevaConfig.descripcion"
+          placeholder="¿Para qué sirve esta configuración?"
+        ></textarea>
+      </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <div class="config__footer-actions">
+        <button
+          pButton
+          type="button"
+          label="Cancelar"
+          class="config__btn-sec"
+          (click)="cerrarFormulario()"
+        ></button>
+        <button
+          pButton
+          type="button"
+          [label]="editando ? 'Guardar cambios' : 'Crear'"
+          icon="pi pi-check"
+          class="config__btn-prim"
+          (click)="guardarConfiguracion()"
+          [disabled]="!nuevaConfig.clave.trim()"
+        ></button>
+      </div>
+    </ng-template>
+  </p-dialog>
+</div>

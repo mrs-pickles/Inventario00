@@ -1,0 +1,164 @@
+<div class="landing">
+  <!-- Navbar -->
+  <nav class="landing__navbar">
+    <div class="landing__container">
+      <div class="landing__logo">
+        <i class="pi pi-car"></i>
+        <span>AUTOZONE</span>
+      </div>
+      <div class="landing__nav-links">
+        <a href="#" (click)="scrollTo('inicio'); $event.preventDefault()">Inicio</a>
+        <a href="#" (click)="scrollTo('productos'); $event.preventDefault()">Productos</a>
+        <a href="#" (click)="scrollTo('beneficios'); $event.preventDefault()">Beneficios</a>
+        <a href="#" (click)="scrollTo('sucursales'); $event.preventDefault()">Sucursales</a>
+        <a href="#" (click)="scrollTo('contacto'); $event.preventDefault()">Contacto</a>
+      </div>
+      <div class="landing__nav-buttons">
+        <a routerLink="/login" class="landing__btn-login">Panel Admin</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section id="inicio" class="landing__hero">
+    <div class="landing__container">
+      <div class="landing__hero-content">
+        <h1 class="landing__hero-title">
+          Repuestos y accesorios automotrices en <span class="highlight">Cochabamba</span>
+        </h1>
+        <p class="landing__hero-description">
+          Encuentra el repuesto que necesitas en nuestras 4 sucursales en Vinto y Colcapirhua. 
+          Búsqueda por medidas exactas, stock en tiempo real y atención técnica especializada.
+        </p>
+        <div class="landing__hero-buttons">
+          <a href="#" class="landing__btn-primary" (click)="scrollTo('productos'); $event.preventDefault()">Ver productos</a>
+          <a href="#" class="landing__btn-secondary" (click)="scrollTo('sucursales'); $event.preventDefault()">Nuestras sucursales</a>
+        </div>
+      </div>
+      <div class="landing__hero-image">
+        <div class="landing__hero-image-placeholder">
+          <img src="https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=600" alt="Taller automotriz" style="width:100%; height:100%; object-fit:cover;">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  
+
+  <!-- Productos / Categorías -->
+  <section id="productos" class="landing__productos">
+    <div class="landing__container">
+      <div class="landing__section-header">
+        <h2>Nuestros Productos</h2>
+        <p>Más de 10,000 repuestos disponibles en inventario</p>
+      </div>
+      <div class="landing__categorias-grid">
+        @for (cat of categorias; track cat.nombre) {
+          <div class="landing__categoria-card">
+            <div class="landing__categoria-icon">
+              <i [class]="cat.icono"></i>
+            </div>
+            <h3 class="landing__categoria-title">{{ cat.nombre }}</h3>
+            <p class="landing__categoria-description">{{ cat.descripcion }}</p>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Beneficios -->
+  <section id="beneficios" class="landing__beneficios">
+    <div class="landing__container">
+      <div class="landing__section-header">
+        <h2>¿Por qué elegir AUTOZONE?</h2>
+        <p>Ventajas que nos diferencian</p>
+      </div>
+      <div class="landing__beneficios-grid">
+        @for (item of beneficios; track item.titulo) {
+          <div class="landing__beneficio-card">
+            <div class="landing__beneficio-icon">
+              <i [class]="item.icono"></i>
+            </div>
+            <h3 class="landing__beneficio-title">{{ item.titulo }}</h3>
+            <p class="landing__beneficio-description">{{ item.descripcion }}</p>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Sucursales -->
+  <section id="sucursales" class="landing__sucursales">
+    <div class="landing__container">
+      <div class="landing__section-header">
+        <h2>Nuestras Sucursales</h2>
+        <p>4 ubicaciones estratégicas en Vinto y Colcapirhua</p>
+      </div>
+      <div class="landing__sucursales-grid">
+        @for (suc of sucursales; track suc.nombre) {
+          <div class="landing__sucursal-card">
+            <div class="landing__sucursal-icon">
+              <i class="pi pi-map-marker"></i>
+            </div>
+            <h3 class="landing__sucursal-title">{{ suc.nombre }}</h3>
+            <p class="landing__sucursal-direccion">{{ suc.direccion }}</p>
+            <p class="landing__sucursal-horario">{{ suc.horario }}</p>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Contacto -->
+  <section id="contacto" class="landing__contacto">
+    <div class="landing__container">
+      <div class="landing__section-header">
+        <h2>Contacto</h2>
+        <p>¿Tienes preguntas? Estamos aquí para ayudarte</p>
+      </div>
+      <div class="landing__contacto-grid">
+        <div class="landing__contacto-info">
+          <div class="landing__contacto-item">
+            <i class="pi pi-envelope"></i>
+            <div>
+              <h4>Email</h4>
+              <p>{{ contacto.email }}</p>
+            </div>
+          </div>
+          <div class="landing__contacto-item">
+            <i class="pi pi-phone"></i>
+            <div>
+              <h4>Teléfono</h4>
+              <p>{{ contacto.telefono }}</p>
+            </div>
+          </div>
+          <div class="landing__contacto-item">
+            <i class="pi pi-whatsapp"></i>
+            <div>
+              <h4>WhatsApp</h4>
+              <p>{{ contacto.whatsapp }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="landing__contacto-redes">
+          <h3>Síguenos</h3>
+          <div class="landing__redes-icons">
+            @for (red of redesSociales; track red.nombre) {
+              <a [href]="red.url" target="_blank" class="landing__red-icon">
+                <i [class]="red.icono"></i>
+              </a>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="landing__footer">
+    <div class="landing__container">
+      <p>&copy; 2026 AUTOZONE - Todos los derechos reservados</p>
+      <p class="landing__footer-text">Vinto y Colcapirhua, Cochabamba - Bolivia</p>
+    </div>
+  </footer>
+</div>

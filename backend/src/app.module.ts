@@ -21,9 +21,21 @@ import { AuthModule } from './auth/auth.module';
 import { Movimiento } from './movimiento/model/movimiento.model';
 import { MovimientoController } from './movimiento/movimiento.controller';
 import { MovimientoService} from './movimiento/movimiento.service';
+import { ClienteModule } from './cliente/cliente.module';
+import { ProveedorModule } from './proveedor/proveedor.module';
+import { VentaModule } from './venta/venta.module';
+import { Cliente } from './cliente/model/cliente.model';
+import { Proveedor } from './proveedor/model/proveedor.model';
+import { CompraModule } from './compra/compra.module';
+import { ConfiguracionModule } from './configuracion/configuracion.module';
+import { Configuracion } from './configuracion/model/configuracion.model';
+import { ReportesAvanzadosModule } from './reportes-avanzados/reportes-avanzados.module';
 
 
-
+import { Venta } from './venta/model/venta.model';
+import { VentaDetalle } from './venta/model/venta-detalle.model';
+import { Compra } from './compra/model/compra.model';
+import { CompraDetalle } from './compra/model/compra-detalle.model';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -42,15 +54,22 @@ import { MovimientoService} from './movimiento/movimiento.service';
         return opts;
       },
     }),
-    TypeOrmModule.forFeature([Usuario, Categoria, Producto, Movimiento]),
-    AuthModule
+    TypeOrmModule.forFeature([Usuario, Categoria, Producto, Movimiento, Cliente, Proveedor, Configuracion, Venta, VentaDetalle, Compra, CompraDetalle]),
+    AuthModule,
+    ClienteModule,
+    ProveedorModule,
+    VentaModule,
+    CompraModule,
+    ConfiguracionModule,
+    ReportesAvanzadosModule
   ],
   controllers: [
     //AppController, 
     UsuarioController,
     ProductoController,
     CategoriaController,
-    MovimientoController
+    MovimientoController,
+  
   ],
   providers: [
     // AppService

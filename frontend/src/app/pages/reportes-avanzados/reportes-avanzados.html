@@ -1,0 +1,24 @@
+<div class="reportes-avanzados">
+  <header class="reportes-avanzados__header">
+    <h1>Reportes Avanzados</h1>
+    <p>Análisis detallado de ventas, productos, ganancias y más</p>
+  </header>
+
+  <div class="tabs">
+    <div class="tabs__headers">
+      <button [class.active]="activeTab === 0" (click)="activeTab = 0">📊 Ventas</button>
+      <button [class.active]="activeTab === 1" (click)="activeTab = 1">🏆 Productos más vendidos</button>
+      <button [class.active]="activeTab === 2" (click)="activeTab = 2">💰 Ganancias</button>
+      <button [class.active]="activeTab === 3" (click)="activeTab = 3">⚠️ Stock bajo</button>
+      <button [class.active]="activeTab === 4" (click)="activeTab = 4">📦 Movimientos</button>
+    </div>
+
+    <div class="tabs__content">
+      @if (activeTab === 0) { <app-ventas-reporte></app-ventas-reporte> }
+      @if (activeTab === 1) { <app-productos-reporte></app-productos-reporte> }
+      @if (activeTab === 2) { <app-ganancias-reporte></app-ganancias-reporte> }
+      @if (activeTab === 3) { <app-stock-reporte></app-stock-reporte> }
+      @if (activeTab === 4) { <app-movimientos-reporte></app-movimientos-reporte> }
+    </div>
+  </div>
+</div>

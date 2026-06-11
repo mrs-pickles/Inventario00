@@ -1,0 +1,238 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.clientes {
+  max-width: 80rem;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.clientes__barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.9rem 1.25rem;
+  margin-bottom: 1.1rem;
+}
+
+.clientes__titulo {
+  margin: 0;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #2c2b28;
+}
+
+.clientes__contador {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #5f5c56;
+  margin-left: 0.35rem;
+}
+
+.clientes__btn-crear {
+  background: #3d4f3e !important;
+  border: 1px solid #2a342a !important;
+  color: #f5f2eb !important;
+  font-weight: 600;
+  padding: 0.5rem 1rem !important;
+  border-radius: 6px;
+}
+
+.clientes__alert {
+  margin: 0 0 0.85rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 6px;
+}
+
+.clientes__alert--info {
+  background: rgba(90, 111, 93, 0.12);
+  border: 1px solid rgba(90, 111, 93, 0.25);
+}
+
+.clientes__alert--error {
+  background: rgba(180, 60, 50, 0.1);
+  border: 1px solid rgba(180, 60, 50, 0.35);
+  color: #5c2a24;
+}
+
+.clientes__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.clientes__buscador {
+  flex: 1;
+  min-width: 200px;
+}
+
+.clientes__buscador input {
+  width: 100%;
+  max-width: 28rem;
+  background: #fffcf8;
+  border: 1px solid #c4c0b8;
+  border-radius: 6px;
+  padding: 0.5rem 0.65rem 0.5rem 2.25rem;
+}
+
+.clientes__tabla-wrap {
+  background: #fffcf8;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.clientes__paginador {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem 0.75rem;
+  padding: 0.5rem 0.65rem;
+  background: #f2ede4;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.clientes__paginador-info {
+  margin-right: auto;
+}
+
+.clientes__select-rows {
+  font: inherit;
+  padding: 0.25rem 0.4rem;
+  border-radius: 4px;
+  border: 1px solid #c4c0b8;
+  background: #fffcf8;
+}
+
+.clientes__tabla-scroll {
+  overflow-x: auto;
+  max-height: 55vh;
+  overflow-y: auto;
+}
+
+.clientes__tabla-html {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.clientes__tabla-html thead th {
+  position: sticky;
+  top: 0;
+  background: #e8e2d8;
+  color: #2c2b28;
+  font-weight: 600;
+  font-size: 0.82rem;
+  text-align: left;
+  padding: 0.7rem 0.65rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.clientes__tabla-html tbody td {
+  padding: 0.6rem 0.65rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.clientes__tabla-html tbody tr.inactivo {
+  opacity: 0.65;
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.cell-name {
+  font-weight: 500;
+}
+
+.cell-dir {
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.td-centrado {
+  text-align: center;
+}
+
+.td-acciones {
+  white-space: nowrap;
+  text-align: center;
+}
+
+.empty-table {
+  text-align: center;
+  padding: 2.5rem 1rem !important;
+  color: #6b6660;
+}
+
+.empty-table .pi {
+  display: block;
+  font-size: 1.75rem;
+  margin-bottom: 0.5rem;
+  opacity: 0.5;
+}
+
+/* Formulario */
+.cliente__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.field label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #3a3a35;
+}
+
+.cliente__textarea {
+  resize: vertical;
+  font-family: inherit;
+  font-size: 0.9rem;
+  padding: 0.5rem 0.65rem;
+  border-radius: 6px;
+  border: 1px solid #c4c0b8;
+  background: #fffcf8;
+}
+
+.cliente__activo-fila {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.cliente__footer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.6rem;
+}
+
+.cliente__btn-sec {
+  background: #e8e2d8 !important;
+  border: 1px solid #c4c0b8 !important;
+  color: #2c2b28 !important;
+}
+
+.cliente__btn-prim {
+  background: #3d4f3e !important;
+  border: 1px solid #2a342a !important;
+  color: #f5f2eb !important;
+}
+
+.w-full {
+  width: 100%;
+}

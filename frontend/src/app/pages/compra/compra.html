@@ -1,0 +1,297 @@
+<div class="compras">
+  <p-toast></p-toast>
+  <header class="compras__barra">
+    <h1 class="compras__titulo">
+      Compras
+      @if (compras.length > 0) {
+        <span class="compras__contador">({{ compras.length }} registradas)</span>
+      }
+    </h1>
+    <button
+      pButton
+      type="button"
+      label="Nueva compra"
+      icon="pi pi-plus"
+      class="compras__btn-crear"
+      (click)="abrirNuevaCompra()"
+    ></button>
+  </header>
+
+  @if (errorMsg) {
+    <p class="compras__alert compras__alert--error" role="alert">{{ errorMsg }}</p>
+  }
+
+  @if (cargando) {
+    <p class="compras__alert compras__alert--info">Cargando compras…</p>
+  }
+
+  <div class="compras__toolbar">
+    <span class="p-input-icon-left compras__buscador">
+      <i class="pi pi-search" aria-hidden="true"></i>
+      <input
+        pInputText
+        type="search"
+        placeholder="Buscar por número, proveedor o total"
+        [(ngModel)]="searchText"
+        (ngModelChange)="onBusquedaCambiada()"
+        name="buscarCompra"
+        autocomplete="off"
+      />
+    </span>
+  </div>
+
+  <div class="compras__tabla-wrap">
+    <div class="compras__paginador">
+      <span class="compras__paginador-info">{{ paginaReporte }}</span>
+      <label>
+        <select
+          class="compras__select-rows"
+          [(ngModel)]="filasPorPagina"
+          (ngModelChange)="onFilasPorPaginaChange($event)"
+        >
+          @for (n of [10, 25, 50]; track n) {
+            <option [ngValue]="n">{{ n }}</option>
+          }
+        </select>
+      </label>
+      <button
+        pButton
+        type="button"
+        icon="pi pi-angle-left"
+        [text]="true"
+        [disabled]="pagina <= 0"
+        (click)="paginaAnterior()"
+      ></button>
+      <button
+        pButton
+        type="button"
+        icon="pi pi-angle-right"
+        [text]="true"
+        [disabled]="pagina >= totalPaginas - 1"
+        (click)="paginaSiguiente()"
+      ></button>
+    </div>
+
+    <div class="compras__tabla-scroll">
+      <table class="compras__tabla-html">
+        <thead>
+          <tr>
+            <th>N° Compra</th>
+            <th>Fecha</th>
+            <th>Proveedor</th>
+            <th>Total</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (c of comprasPagina; track c.id) {
+            <tr>
+              <td class="cell-numero">{{ c.numero }}</td>
+              <td>{{ fechaFormato(c.fecha) }}</td>
+              <td>{{ c.proveedor?.nombre || '—' }}</td>
+              <td class="td-numero">Bs. {{ moneda(c.total) }}</td>
+              <td class="td-centrado">
+                <p-tag [value]="c.estado" [severity]="getEstadoBadge(c.estado)" [rounded]="true" />
+              </td>
+              <td class="td-acciones">
+                <button
+                  pButton
+                  type="button"
+                  icon="pi pi-ban"
+                  [rounded]="true"
+                  [text]="true"
+                  severity="danger"
+                  pTooltip="Anular"
+                  [disabled]="c.estado === 'anulada'"
+                  (click)="anularCompra(c.id)"
+                ></button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="empty-table">
+                <i class="pi pi-inbox" aria-hidden="true"></i>
+                <span>
+                  @if (searchText.trim()) {
+                    No hay resultados. Prueba otra búsqueda.
+                  } @else {
+                    No hay compras registradas. Crea la primera.
+                  }
+                </span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Diálogo para nueva compra -->
+  <p-dialog
+    header="Nueva compra"
+    [(visible)]="mostrarFormulario"
+    [modal]="true"
+    [dismissableMask]="true"
+    [style]="{ width: 'min(52rem, 95vw)' }"
+    (onHide)="cerrarFormulario()"
+  >
+    <div class="compra__form">
+      <!-- Seleccionar proveedor -->
+      <div class="field">
+        <label for="compra-proveedor">Proveedor *</label>
+        <p-select
+          id="compra-proveedor"
+          [options]="proveedores"
+          optionLabel="nombre"
+          optionValue="id"
+          [(ngModel)]="nuevaCompra.proveedorId"
+          placeholder="Seleccionar proveedor"
+          [style]="{ width: '100%' }"
+        />
+      </div>
+
+      <!-- Agregar productos -->
+      <div class="compra__productos-agregar">
+        <div class="compra__producto-select">
+          <label for="compra-producto">Agregar producto</label>
+          <p-select
+            id="compra-producto"
+            [options]="productos"
+            optionLabel="nombre"
+            optionValue="id"
+            [(ngModel)]="productoSeleccionado"
+            placeholder="Buscar producto"
+            [style]="{ width: '100%' }"
+          />
+        </div>
+        <div class="compra__producto-cantidad">
+          <label for="compra-cantidad">Cantidad</label>
+          <p-inputNumber
+            id="compra-cantidad"
+            [(ngModel)]="cantidadSeleccionada"
+            [min]="1"
+            [showButtons]="true"
+            [style]="{ width: '100%' }"
+          />
+        </div>
+        <div class="compra__producto-precio">
+          <label for="compra-precio">Precio unitario</label>
+          <p-inputNumber
+            id="compra-precio"
+            [(ngModel)]="precioCompra"
+            [min]="0"
+            [mode]="'decimal'"
+            [showButtons]="true"
+            [style]="{ width: '100%' }"
+            placeholder="0.00"
+          />
+        </div>
+        <div class="compra__producto-btn">
+          <button
+            pButton
+            type="button"
+            label="Agregar"
+            icon="pi pi-plus"
+            class="compra__btn-agregar"
+            (click)="agregarProducto()"
+            [disabled]="!productoSeleccionado"
+          ></button>
+        </div>
+      </div>
+
+      <!-- Tabla de productos agregados -->
+      @if (nuevaCompra.detalles.length > 0) {
+        <div class="compra__detalles">
+          <table class="compra__detalles-tabla">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th class="td-numero">Cantidad</th>
+                <th class="td-numero">Precio</th>
+                <th class="td-numero">Subtotal</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (d of nuevaCompra.detalles; track $index) {
+                <tr>
+                  <td>{{ d.productoNombre }}</td>
+                  <td class="td-numero">{{ d.cantidad }}</td>
+                  <td class="td-numero">Bs. {{ moneda(d.precioUnitario) }}</td>
+                  <td class="td-numero">Bs. {{ moneda(d.subtotal) }}</td>
+                  <td class="td-centrado">
+                    <button
+                      pButton
+                      type="button"
+                      icon="pi pi-trash"
+                      [rounded]="true"
+                      [text]="true"
+                      severity="danger"
+                      (click)="quitarProducto($index)"
+                    ></button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
+      <!-- Resumen -->
+      <div class="compra__resumen">
+        <div class="compra__resumen-linea">
+          <span>Subtotal:</span>
+          <span class="td-numero">Bs. {{ moneda(subtotal) }}</span>
+        </div>
+        <div class="compra__resumen-linea">
+          <label for="compra-descuento">Descuento:</label>
+          <p-inputNumber
+            id="compra-descuento"
+            [(ngModel)]="nuevaCompra.descuento"
+            [min]="0"
+            [max]="subtotal"
+            [style]="{ width: '120px' }"
+          />
+        </div>
+        <div class="compra__resumen-linea compra__total">
+          <span>Total:</span>
+          <span class="td-numero">Bs. {{ moneda(total) }}</span>
+        </div>
+      </div>
+
+      <!-- Observación -->
+      <div class="field">
+        <label for="compra-obs">Observación</label>
+        <textarea
+          id="compra-obs"
+          class="compra__textarea"
+          rows="2"
+          [(ngModel)]="nuevaCompra.observacion"
+          placeholder="Notas adicionales"
+        ></textarea>
+      </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <div class="compra__footer-actions">
+        <button
+          pButton
+          type="button"
+          label="Cancelar"
+          class="compra__btn-sec"
+          (click)="cerrarFormulario()"
+        ></button>
+        <button
+          pButton
+          type="button"
+          label="Confirmar compra"
+          icon="pi pi-check"
+          class="compra__btn-prim"
+          (click)="guardarCompra()"
+          [disabled]="!nuevaCompra.proveedorId || nuevaCompra.detalles.length === 0"
+        ></button>
+      </div>
+    </ng-template>
+  </p-dialog>
+</div>

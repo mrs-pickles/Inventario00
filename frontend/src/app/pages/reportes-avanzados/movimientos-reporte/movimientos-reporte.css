@@ -1,0 +1,104 @@
+.movimientos-reporte {
+  padding: 1rem 0;
+}
+
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-end;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #f2ede4;
+  border-radius: 8px;
+}
+
+.filtros__campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 150px;
+}
+
+.filtros__campo label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #3a3a35;
+}
+
+.filtros__acciones {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #5f5c56;
+}
+
+.kpi-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.kpi-card {
+  background: linear-gradient(145deg, #4a3f36 0%, #3a322a 100%);
+  color: #f5f2eb;
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+}
+
+.kpi-card.entradas {
+  background: linear-gradient(145deg, #2d4a32 0%, #1e3a22 100%);
+}
+
+.kpi-card.salidas {
+  background: linear-gradient(145deg, #8b3c2a 0%, #6b2a1a 100%);
+}
+
+.kpi-card.diferencia.positivo {
+  background: linear-gradient(145deg, #2d4a32 0%, #1e3a22 100%);
+}
+
+.kpi-card.diferencia.negativo {
+  background: linear-gradient(145deg, #8b3c2a 0%, #6b2a1a 100%);
+}
+
+.kpi-card__label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.9;
+}
+
+.kpi-card__value {
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.kpi-card__sub {
+  font-size: 0.7rem;
+  opacity: 0.75;
+}
+
+.tabla {
+  margin-top: 1rem;
+}
+
+.cell-producto {
+  font-weight: 500;
+}
+
+.td-numero {
+  text-align: right;
+}
+
+.empty-table {
+  text-align: center;
+  padding: 2rem !important;
+  color: #6b6660;
+}

@@ -1,0 +1,244 @@
+<div class="proveedores">
+  <p-toast></p-toast>
+  <header class="proveedores__barra">
+    <h1 class="proveedores__titulo">
+      Proveedores
+      @if (proveedores.length > 0) {
+        <span class="proveedores__contador">({{ proveedores.length }} registrados)</span>
+      }
+    </h1>
+    <button
+      pButton
+      type="button"
+      label="Nuevo proveedor"
+      icon="pi pi-plus"
+      class="proveedores__btn-crear"
+      (click)="abrirCrear()"
+    ></button>
+  </header>
+
+  @if (errorMsg) {
+    <p class="proveedores__alert proveedores__alert--error" role="alert">{{ errorMsg }}</p>
+  }
+
+  @if (cargando) {
+    <p class="proveedores__alert proveedores__alert--info">Cargando proveedores…</p>
+  }
+
+  <div class="proveedores__toolbar">
+    <span class="p-input-icon-left proveedores__buscador">
+      <i class="pi pi-search" aria-hidden="true"></i>
+      <input
+        pInputText
+        type="search"
+        placeholder="Buscar por nombre, documento, teléfono o email"
+        [(ngModel)]="searchText"
+        (ngModelChange)="onBusquedaCambiada()"
+        name="buscarProveedor"
+        autocomplete="off"
+      />
+    </span>
+  </div>
+
+  <div class="proveedores__tabla-wrap">
+    <div class="proveedores__paginador">
+      <span class="proveedores__paginador-info">{{ paginaReporte }}</span>
+      <label>
+        <select
+          class="proveedores__select-rows"
+          [(ngModel)]="filasPorPagina"
+          (ngModelChange)="onFilasPorPaginaChange($event)"
+        >
+          @for (n of [10, 25, 50]; track n) {
+            <option [ngValue]="n">{{ n }}</option>
+          }
+        </select>
+      </label>
+      <button
+        pButton
+        type="button"
+        icon="pi pi-angle-left"
+        [text]="true"
+        [disabled]="pagina <= 0"
+        (click)="paginaAnterior()"
+      ></button>
+      <button
+        pButton
+        type="button"
+        icon="pi pi-angle-right"
+        [text]="true"
+        [disabled]="pagina >= totalPaginas - 1"
+        (click)="paginaSiguiente()"
+      ></button>
+    </div>
+
+    <div class="proveedores__tabla-scroll">
+      <table class="proveedores__tabla-html">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Documento</th>
+            <th>Teléfono</th>
+            <th>Email</th>
+            <th>Contacto</th>
+            <th>Activo</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of proveedoresPagina; track p.id) {
+            <tr [class.inactivo]="!p.activo">
+              <td class="cell-name">{{ p.nombre }}</td>
+              <td>{{ p.documento || '—' }}</td>
+              <td>{{ p.telefono || '—' }}</td>
+              <td>{{ p.email || '—' }}</td>
+              <td>{{ p.contacto || '—' }}</td>
+              <td class="td-centrado">
+                <p-toggleswitch
+                  [ngModel]="p.activo"
+                  (ngModelChange)="onActivoChange($event, p)"
+                  [id]="'act-' + p.id"
+                />
+              </td>
+              <td class="td-acciones">
+                <button
+                  pButton
+                  type="button"
+                  icon="pi pi-pencil"
+                  [rounded]="true"
+                  [text]="true"
+                  pTooltip="Editar"
+                  (click)="abrirEditar(p)"
+                ></button>
+                <button
+                  pButton
+                  type="button"
+                  icon="pi pi-trash"
+                  [rounded]="true"
+                  [text]="true"
+                  severity="danger"
+                  pTooltip="Eliminar"
+                  (click)="eliminarProveedor(p.id)"
+                ></button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="7" class="empty-table">
+                <i class="pi pi-inbox" aria-hidden="true"></i>
+                <span>
+                  @if (searchText.trim()) {
+                    No hay resultados. Prueba otra búsqueda.
+                  } @else {
+                    No hay proveedores registrados. Crea el primero.
+                  }
+                </span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Diálogo para crear/editar -->
+  <p-dialog
+    [header]="editando ? 'Editar proveedor' : 'Nuevo proveedor'"
+    [(visible)]="mostrarFormulario"
+    [modal]="true"
+    [dismissableMask]="true"
+    [style]="{ width: 'min(32rem, 95vw)' }"
+    (onHide)="cerrarFormulario()"
+  >
+    <div class="proveedor__form">
+      <div class="field">
+        <label for="prov-nombre">Nombre *</label>
+        <input
+          pInputText
+          id="prov-nombre"
+          class="w-full"
+          [(ngModel)]="nuevoProveedor.nombre"
+          placeholder="Nombre del proveedor"
+        />
+      </div>
+      <div class="field">
+        <label for="prov-doc">Documento (NIT/CI)</label>
+        <input
+          pInputText
+          id="prov-doc"
+          class="w-full"
+          [(ngModel)]="nuevoProveedor.documento"
+          placeholder="Opcional"
+        />
+      </div>
+      <div class="field">
+        <label for="prov-tel">Teléfono</label>
+        <input
+          pInputText
+          id="prov-tel"
+          class="w-full"
+          [(ngModel)]="nuevoProveedor.telefono"
+          placeholder="Teléfono de contacto"
+        />
+      </div>
+      <div class="field">
+        <label for="prov-email">Email</label>
+        <input
+          pInputText
+          id="prov-email"
+          type="email"
+          class="w-full"
+          [(ngModel)]="nuevoProveedor.email"
+          placeholder="proveedor@ejemplo.com"
+        />
+      </div>
+      <div class="field">
+        <label for="prov-contacto">Persona de contacto</label>
+        <input
+          pInputText
+          id="prov-contacto"
+          class="w-full"
+          [(ngModel)]="nuevoProveedor.contacto"
+          placeholder="Nombre del contacto"
+        />
+      </div>
+      <div class="field">
+        <label for="prov-dir">Dirección</label>
+        <textarea
+          id="prov-dir"
+          class="w-full p-inputtext p-component proveedor__textarea"
+          rows="2"
+          [(ngModel)]="nuevoProveedor.direccion"
+          placeholder="Dirección completa"
+        ></textarea>
+      </div>
+      <div class="field proveedor__activo-fila">
+        <label for="prov-activo">Proveedor activo</label>
+        <p-toggleswitch
+          id="prov-activo"
+          [(ngModel)]="nuevoProveedor.activo"
+        />
+      </div>
+    </div>
+    <ng-template pTemplate="footer">
+      <div class="proveedor__footer-actions">
+        <button
+          pButton
+          type="button"
+          label="Cancelar"
+          class="proveedor__btn-sec"
+          (click)="cerrarFormulario()"
+        ></button>
+        <button
+          pButton
+          type="button"
+          [label]="editando ? 'Guardar cambios' : 'Crear proveedor'"
+          icon="pi pi-check"
+          class="proveedor__btn-prim"
+          (click)="guardarProveedor()"
+          [disabled]="!nuevoProveedor.nombre.trim()"
+        ></button>
+      </div>
+    </ng-template>
+  </p-dialog>
+</div>
