@@ -75,8 +75,8 @@ import { CompraDetalle } from './compra/model/compra-detalle.model';
     // AppService
     UsuarioService,
     UsuarioSeedService,
-    LittleTreesSeedService,
-    DemoAdulteradosSeedService,
+    //LittleTreesSeedService,
+    //DemoAdulteradosSeedService,
     ProductoService,
     CategoriaService,
     MovimientoService

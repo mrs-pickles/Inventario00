@@ -17,13 +17,13 @@ import { catchError, of, switchMap } from 'rxjs';
 type OrdenNombre = 'az' | 'za';
 
 /** Familias del catálogo Little Trees (referencia en pantalla). */
-const FAMILIAS_CATALOGO_LT = [
+/*const FAMILIAS_CATALOGO_LT = [
   'DULCES & FRUTALES',
   'FLORALES & SUAVES',
   'FRESCOS & NATURALES',
   'INTENSOS & ESPECIALES',
   'DISEÑOS & EDICIONES ESPECIALES',
-] as const;
+] as const;*/
 
 @Component({
   selector: 'app-categorias',
@@ -44,7 +44,7 @@ export class Categorias implements OnInit {
   private categoriaService = inject(CategoriaService);
 
   categorias: CategoriaListado[] = [];
-  readonly familiasCatalogoLt = [...FAMILIAS_CATALOGO_LT];
+  /*readonly familiasCatalogoLt = [...FAMILIAS_CATALOGO_LT];*/
   searchText = '';
   orden: OrdenNombre = 'az';
   cargando = true;
