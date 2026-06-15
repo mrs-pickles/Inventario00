@@ -1,4 +1,4 @@
-/*import { registerAs } from "@nestjs/config";
+import { registerAs } from "@nestjs/config";
 import { TypeOrmModuleOptions } from "@nestjs/typeorm";
 import { Producto } from "src/producto/model/producto.model";
 import { Categoria } from "src/categoria/model/categoria.model";
@@ -30,8 +30,10 @@ export default registerAs(
         entities: [Usuario, Producto, Categoria, Movimiento, Cliente, Proveedor, Configuracion, Venta, VentaDetalle, Compra, CompraDetalle],
         synchronize: (process.env.DB_SYNC ?? 'true') !== 'false',
     }),
-);*/
+);
 
+
+/*
 import { registerAs } from "@nestjs/config";
 import { TypeOrmModuleOptions } from "@nestjs/typeorm";
 import { Producto } from "src/producto/model/producto.model";
@@ -72,4 +74,4 @@ export default registerAs(
             synchronize: (process.env.DB_SYNC ?? 'true') !== 'false',
         };
     },
-);
+);*/
