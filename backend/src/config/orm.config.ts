@@ -63,6 +63,9 @@ export default registerAs(
         database: process.env.DB_NAME ?? 'inventario-db',
         entities: [Usuario, Producto, Categoria, Movimiento, Cliente, Proveedor, Configuracion, Venta, VentaDetalle, Compra, CompraDetalle],
         synchronize: (process.env.DB_SYNC ?? 'true') !== 'false',
-        ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
+        ssl: { rejectUnauthorized: false },
+        extra: {
+            ssl: { rejectUnauthorized: false }
+        }
     }),
 );
